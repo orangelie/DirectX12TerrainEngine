@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC">
+      <UniqueIdentifier>{46f6e293-6fe5-4183-b50d-b5fbb3143f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\DxInterface">
+      <UniqueIdentifier>{41099da2-7d0d-4433-ba29-777fbe54eec8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Windows">
+      <UniqueIdentifier>{3176511a-10ef-409e-8230-7e825a4c9483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Utility">
+      <UniqueIdentifier>{843ce3d0-00e5-491c-8627-ebca9823c207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Engine">
+      <UniqueIdentifier>{b8753e03-df01-4fda-a0f8-00284e654f06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC">
+      <UniqueIdentifier>{2c0d774a-8d01-4799-b429-edff9a48f918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC\DxInterface">
+      <UniqueIdentifier>{31cb84fd-4841-4cf9-84c3-91c3000b1e2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Engine">
+      <UniqueIdentifier>{1704c329-2c7a-4d79-8465-6ee9ce2d2ff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Utility">
+      <UniqueIdentifier>{5d009bea-c41c-4e51-b8df-956d937ee6dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Windows">
+      <UniqueIdentifier>{12da2491-76d7-496b-8486-302b5c41e897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PRIVATE">
+      <UniqueIdentifier>{9eb8a6bd-c718-4c87-9ff3-d8aea317b956}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PRIVATE\DxInterface">
+      <UniqueIdentifier>{114a5cfb-5584-4e21-9f8a-9ae27521ac46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PRIVATE\Texture">
+      <UniqueIdentifier>{601c350c-8c7b-4df6-958a-12584f9d2467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PRIVATE">
+      <UniqueIdentifier>{d7a2bee9-d1e2-49d1-b9eb-837393109d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PRIVATE\Texture">
+      <UniqueIdentifier>{8ef07bb7-288e-43dc-ae3f-8667f9f0f671}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\SAMPLES">
+      <UniqueIdentifier>{2341368a-34aa-4767-b294-ba9bd9150b8d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\PRIVATE\Texture\DDSTextureLoader.cpp">
+      <Filter>소스 파일\PRIVATE\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\PUBLIC\Windows\Windows.cpp">
+      <Filter>소스 파일\PUBLIC\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\PUBLIC\Engine\ZekrosEngine.cpp">
+      <Filter>소스 파일\PUBLIC\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\SAMPLES\DirectX12Init.cpp">
+      <Filter>소스 파일\SAMPLES</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp">
+      <Filter>소스 파일\PUBLIC\DxInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\PUBLIC\Utility\DxgiUtil.cpp">
+      <Filter>소스 파일\PUBLIC\Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HEADER\PRIVATE\DxInterface\d3dx12.h">
+      <Filter>헤더 파일\PRIVATE\DxInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PRIVATE\Texture\DDSTextureLoader.h">
+      <Filter>헤더 파일\PRIVATE\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\Windows\Windows.h">
+      <Filter>헤더 파일\PUBLIC\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\Engine\ZekrosEngine.h">
+      <Filter>헤더 파일\PUBLIC\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\Utility\CppStdUtil.h">
+      <Filter>헤더 파일\PUBLIC\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\DxInterface\InterfeceDxgi.h">
+      <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\Utility\DxgiUtil.h">
+      <Filter>헤더 파일\PUBLIC\Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
