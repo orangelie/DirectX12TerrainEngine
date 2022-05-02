@@ -28,14 +28,30 @@ namespace orangelie {
 			~InterfaceD3D12();
 
 			void CreateDevice(IDXGIFactory4* DxgiFactory);
+			void CreateFenceAndGetIncrementSize();
+			void CreateRtvAndDsvDescriptorHeap(UINT BackBufferCount);
 
 			ID3D12Device* GetDevice() const;
+			ID3D12Fence* GetFence() const;
+			ID3D12DescriptorHeap* GetRtvDescriptorHeap() const;
+			ID3D12DescriptorHeap* GetDsvDescriptorHeap() const;
+
+			UINT GetRtvDescriptorIncrementSize() const;
+			UINT GetDsvDescriptorIncrementSize() const;
+			UINT GetCbvSrvUavDescriptorIncrementSize() const;
 
 		private:
 
 		private:
-			ComPtr<ID3D12Device> m_Device;
+			ComPtr<ID3D12Device> m_Device = nullptr;
+			ComPtr<ID3D12Fence> m_Fence = nullptr;
 
+			UINT m_RtvSize;
+			UINT m_DsvSize;
+			UINT m_CbvSrvUavSize;
+
+			ComPtr<ID3D12DescriptorHeap> m_RtvDescriptorHeap = nullptr;
+			ComPtr<ID3D12DescriptorHeap> m_DsvDescriptorHeap = nullptr;
 		};
 	}
 }

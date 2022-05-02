@@ -25,6 +25,13 @@ namespace orangelie {
 		}
 
 		void ZekrosEngine::Initialize(int maxScreenWidth, int maxScreenHeight, bool isFullscreenMode) {
+#if defined(DEBUG) || defined(_DEBUG)
+			ComPtr<ID3D12Debug> DebugLayer;
+			HR(D3D12GetDebugInterface(IID_PPV_ARGS(DebugLayer.GetAddressOf())));
+			DebugLayer->EnableDebugLayer();
+#endif
+
+
 			// Win32
 			m_Win32 = std::make_unique<orangelie::Windows::Win32>();
 			m_Win32->Intialize(WindowProcedure, maxScreenWidth, maxScreenHeight, isFullscreenMode);
@@ -33,35 +40,45 @@ namespace orangelie {
 			m_DxgiInterface = std::make_unique<orangelie::DxInterface::InterfaceDxgi>();
 			m_DxgiInterface->BuildDxgiFactory();
 
-			// GameTimer
-			m_GameTimer = std::make_unique<orangelie::Time::GameTimer>();
-
 			// D3D12
 			m_D3D12Interface = std::make_unique<orangelie::DxInterface::InterfaceD3D12>();
 			m_D3D12Interface->CreateDevice(m_DxgiInterface->GetFactory4());
+			m_Device = m_D3D12Interface->GetDevice();
+
+			m_D3D12Interface->CreateFenceAndGetIncrementSize();
+			CreateCommandObjects();
+			m_DxgiInterface->CreateSwapChain(m_CommandQueue.Get(),
+				m_Win32->GetHwnd(), isFullscreenMode, gBackBufferCount, m_BackBufferFormat,
+				m_ClientWidth, m_ClientHeight);
+			m_D3D12Interface->CreateRtvAndDsvDescriptorHeap(gBackBufferCount);
+
+			OnResize();
 		}
 
 		void ZekrosEngine::Run() {
 			MSG msg = {};
 
-			m_GameTimer->Reset();
+			m_GameTimer.Reset();
 
 			for (;;) {
 				if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-					DispatchMessageW(&msg);
 					TranslateMessage(&msg);
+					DispatchMessageW(&msg);
 				}
 
 				if (msg.message == WM_QUIT) {
 					break;
 				}
 
-				if (m_IsEnginePaused) continue;
+				m_GameTimer.Tick();
 
-				update(m_GameTimer->DeltaTime());
-				draw(m_GameTimer->DeltaTime());
-
-				m_GameTimer->Tick();
+				if (m_IsEnginePaused == false) {
+					update(m_GameTimer.DeltaTime());
+					draw(m_GameTimer.DeltaTime());
+				}
+				else {
+					Sleep(100);
+				}
 			}
 		}
 
@@ -69,11 +86,11 @@ namespace orangelie {
 			switch (uMessage) {
 			case WM_ACTIVATE:
 				if (LOWORD(wParam) == WA_INACTIVE) {
-					if(m_GameTimer.get() != nullptr) m_GameTimer->Stop();
+					m_GameTimer.Stop();
 					m_IsEnginePaused = true;
 				}
 				else {
-					if (m_GameTimer.get() != nullptr) m_GameTimer->Start();
+					m_GameTimer.Start();
 					m_IsEnginePaused = false;
 				}
 				return 0;
@@ -86,12 +103,14 @@ namespace orangelie {
 					m_IsSizeMinimized = true;
 					m_IsSizeMaximized = false;
 					m_IsEnginePaused = true;
+					OnResize();
 				}
 
 				else if (wParam == SIZE_MAXIMIZED) {
 					m_IsSizeMinimized = false;
 					m_IsSizeMaximized = true;
 					m_IsEnginePaused = false;
+					OnResize();
 				}
 
 				else if (wParam == SIZE_RESTORED) {
@@ -104,15 +123,17 @@ namespace orangelie {
 						m_IsEnginePaused = false;
 					}
 				}
+				
 				return 0;
 
 			case WM_ENTERSIZEMOVE:
 				m_IsEnginePaused = true;
-				if (m_GameTimer.get() != nullptr) m_GameTimer->Stop();
+				m_GameTimer.Stop();
 				return 0;
 			case WM_EXITSIZEMOVE:
 				m_IsEnginePaused = false;
-				if (m_GameTimer.get() != nullptr) m_GameTimer->Start();
+				m_GameTimer.Start();
+				OnResize();
 				return 0;
 
 			case WM_MOUSEMOVE:
@@ -153,8 +174,160 @@ namespace orangelie {
 
 			return DefWindowProcW(hWnd, uMessage, wParam, lParam);
 		}
-	}
 
+		void ZekrosEngine::OnResize() {
+			assert(m_D3D12Interface->GetDevice());
+			assert(m_DxgiInterface->GetSwapChain());
+			assert(m_CommandAllocator);
+
+			FlushCommandQueue();
+
+			HR(m_CommandList->Reset(m_CommandAllocator.Get(), nullptr));
+			for (int i = 0; i < gBackBufferCount; ++i) {
+				m_SwapChainBuffer[i].Reset();
+			}
+			m_DepthStencilBuffer.Reset();
+
+			HR(m_DxgiInterface->GetSwapChain()->ResizeBuffers(gBackBufferCount,
+				m_ClientWidth, m_ClientHeight, m_BackBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
+
+			m_CurrentSwapBufferIndex = 0;
+
+			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_D3D12Interface->GetRtvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
+			auto rtvOffset = m_D3D12Interface->GetDsvDescriptorIncrementSize();
+			for (int i = 0; i < gBackBufferCount; ++i) {
+				HR(m_DxgiInterface->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(m_SwapChainBuffer[i].GetAddressOf())));
+				m_Device->CreateRenderTargetView(m_SwapChainBuffer[i].Get(), nullptr, rtvHandle);
+				rtvHandle.Offset(1, rtvOffset);
+			}
+
+			D3D12_RESOURCE_DESC dsvResourceDesc = {};
+			dsvResourceDesc.Alignment = 0;
+			dsvResourceDesc.DepthOrArraySize = 1;
+			dsvResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+			dsvResourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+			dsvResourceDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+			dsvResourceDesc.Width = m_ClientWidth;
+			dsvResourceDesc.Height = m_ClientHeight;
+			dsvResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+			dsvResourceDesc.MipLevels = 1;
+			dsvResourceDesc.SampleDesc.Count = 1;
+			dsvResourceDesc.SampleDesc.Quality = 0;
+
+			D3D12_CLEAR_VALUE clearValue = {};
+			clearValue.Format = m_DepthStencilFormat;
+			clearValue.DepthStencil.Depth = 1.0f;
+			clearValue.DepthStencil.Stencil = 0;
+
+			using oragelie::CppStdUtil::unmove;
+			HR(m_Device->CreateCommittedResource(
+				&unmove(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT)),
+				D3D12_HEAP_FLAG_NONE,
+				&dsvResourceDesc,
+				D3D12_RESOURCE_STATE_COMMON,
+				&clearValue,
+				IID_PPV_ARGS(m_DepthStencilBuffer.GetAddressOf())));
+
+			D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+			depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
+			depthStencilViewDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+			depthStencilViewDesc.Texture2D.MipSlice = 0;
+			depthStencilViewDesc.Format = m_DepthStencilFormat;
+
+			CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_D3D12Interface->GetDsvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
+			m_Device->CreateDepthStencilView(m_DepthStencilBuffer.Get(),
+				&depthStencilViewDesc,
+				dsvHandle);
+
+			m_CommandList->ResourceBarrier(1,
+				&unmove(CD3DX12_RESOURCE_BARRIER::Transition(
+					m_DepthStencilBuffer.Get(),
+					D3D12_RESOURCE_STATE_COMMON,
+					D3D12_RESOURCE_STATE_DEPTH_WRITE)));
+
+			SubmitCommandList();
+			FlushCommandQueue();
+
+			m_Viewport.Width = static_cast<float>(m_ClientWidth);
+			m_Viewport.Height = static_cast<float>(m_ClientHeight);
+			m_Viewport.MinDepth = 0.0f;
+			m_Viewport.MaxDepth = 1.0f;
+			m_Viewport.TopLeftX = 0;
+			m_Viewport.TopLeftY = 0;
+
+			m_ScissorRect = { 0, 0, m_ClientWidth, m_ClientHeight };
+		}
+
+		void ZekrosEngine::FlushCommandQueue() {
+			auto fence = m_D3D12Interface->GetFence();
+
+			++m_CurrentFenceCount;
+			m_CommandQueue->Signal(fence,
+				m_CurrentFenceCount);
+
+			if (fence->GetCompletedValue() < m_CurrentFenceCount) {
+				HANDLE hEvent = CreateEventEx(
+					nullptr,
+					nullptr,
+					false,
+					EVENT_ALL_ACCESS);
+
+				HR(fence->SetEventOnCompletion(
+					m_CurrentFenceCount,
+					hEvent));
+
+				WaitForSingleObject(hEvent, 0xFFFFFFFF);
+				CloseHandle(hEvent);
+			}
+		}
+
+		void ZekrosEngine::PresentSwapChain() {
+			m_DxgiInterface->GetSwapChain()->Present(0, 0);
+		}
+
+		void ZekrosEngine::SubmitCommandList() {
+			HR(m_CommandList->Close());
+			ID3D12CommandList* cmdLists[] = { m_CommandList.Get()};
+			m_CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+		}
+
+		void ZekrosEngine::CreateCommandObjects() {
+			HR(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+				IID_PPV_ARGS(m_CommandAllocator.GetAddressOf())));
+
+			HR(m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+				m_CommandAllocator.Get(),
+				nullptr,
+				IID_PPV_ARGS(m_CommandList.GetAddressOf())));
+
+
+			D3D12_COMMAND_QUEUE_DESC CmdQueueDesc = {};
+
+			CmdQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+			CmdQueueDesc.Priority = 0;
+			CmdQueueDesc.NodeMask = 0;
+			CmdQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+
+			HR(m_Device->CreateCommandQueue(&CmdQueueDesc,
+				IID_PPV_ARGS(m_CommandQueue.GetAddressOf())));
+
+			m_CommandList->Close();
+		}
+
+		ID3D12Resource* ZekrosEngine::SwapChainResource() const {
+			return m_SwapChainBuffer[m_CurrentSwapBufferIndex].Get();
+		}
+
+		D3D12_CPU_DESCRIPTOR_HANDLE ZekrosEngine::CurrentBackBufferView() const {
+			using oragelie::CppStdUtil::unmove;
+			return unmove(CD3DX12_CPU_DESCRIPTOR_HANDLE(m_D3D12Interface->GetRtvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+				m_CurrentSwapBufferIndex, m_D3D12Interface->GetDsvDescriptorIncrementSize()));
+		}
+
+		D3D12_CPU_DESCRIPTOR_HANDLE ZekrosEngine::DepthStencilView() const {
+			return m_D3D12Interface->GetDsvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+		}
+	}
 }
 
 orangelie::Engine::ZekrosEngine* orangelie::Engine::ZekrosEngine::gZekrosEngine = nullptr;

@@ -93,6 +93,9 @@
     <ClCompile Include="SOURCE\PUBLIC\DxInterface\InterfaceD3D12.cpp">
       <Filter>소스 파일\PUBLIC\DxInterface</Filter>
     </ClCompile>
+    <ClCompile Include="SOURCE\PUBLIC\Utility\CppStdUtil.cpp">
+      <Filter>소스 파일\PUBLIC\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HEADER\PRIVATE\DxInterface\d3dx12.h">

@@ -28,13 +28,18 @@ namespace orangelie {
 			~InterfaceDxgi();
 
 			void BuildDxgiFactory();
+			void CreateSwapChain(ID3D12CommandQueue* CmdQueue, HWND hWnd,
+				bool isFullscreenMode, UINT BackBufferCount, DXGI_FORMAT BackBufferFormat,
+				UINT ClientWidth, UINT ClientHeight);
 
 			IDXGIFactory4* GetFactory4() const;
+			ComPtr<IDXGISwapChain> GetSwapChain() const;
 
 		private:
 
 		private:
-			ComPtr<IDXGIFactory4> m_DxgiFactory;
+			ComPtr<IDXGIFactory4> m_DxgiFactory = nullptr;
+			ComPtr<IDXGISwapChain> m_DxgiSwapChain = nullptr;
 
 		};
 	}

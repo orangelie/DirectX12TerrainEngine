@@ -1,0 +1,14 @@
+﻿  main.cpp
+  DDSTextureLoader.cpp
+  InterfaceD3D12.cpp
+  InterfeceDxgi.cpp
+  ZekrosEngine.cpp
+  GameTimer.cpp
+  CppStdUtil.cpp
+  DxgiUtil.cpp
+  Windows.cpp
+  코드를 생성하고 있습니다.
+  Previous IPDB not found, fall back to full compilation.
+  All 324 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  코드를 생성했습니다.
+  TerrainEngine@orangelie.vcxproj -> C:\Users\박상우\Desktop\Github\DirectX12TerrainEngine\1. DirectX12 Initialization\x64\Release\TerrainEngine@orangelie.exe

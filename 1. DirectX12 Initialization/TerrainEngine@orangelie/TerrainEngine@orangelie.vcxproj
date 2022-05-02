@@ -134,12 +134,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\winrt;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\um;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\shared;D:\Library\DirectX\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\Library\DirectX\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -149,6 +153,7 @@
     <ClCompile Include="SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp" />
     <ClCompile Include="SOURCE\PUBLIC\Engine\ZekrosEngine.cpp" />
     <ClCompile Include="SOURCE\PUBLIC\Time\GameTimer.cpp" />
+    <ClCompile Include="SOURCE\PUBLIC\Utility\CppStdUtil.cpp" />
     <ClCompile Include="SOURCE\PUBLIC\Utility\DxgiUtil.cpp" />
     <ClCompile Include="SOURCE\PUBLIC\Windows\Windows.cpp" />
   </ItemGroup>

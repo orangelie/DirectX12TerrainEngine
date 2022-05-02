@@ -44,7 +44,7 @@ namespace orangelie {
 			void CreateParentProcess();
 
 		private:
-			const wchar_t*	m_ModuleClassName = L"ZekrosEngine";
+			const wchar_t*	m_ModuleClassName = L"ZekrosEngine@orangelie";
 
 			HWND			m_HwndHandle;
 			HINSTANCE		m_MouduleHandle;

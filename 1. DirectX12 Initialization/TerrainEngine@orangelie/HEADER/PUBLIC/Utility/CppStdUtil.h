@@ -35,3 +35,13 @@
 		throw std::runtime_error(__err_message); \
 	} \
 } \
+
+
+namespace oragelie {
+	namespace CppStdUtil {
+		template <class _Tp>
+		_Tp& unmove(_Tp&& ____TpTp__) {
+			return ____TpTp__;
+		}
+	}
+}
