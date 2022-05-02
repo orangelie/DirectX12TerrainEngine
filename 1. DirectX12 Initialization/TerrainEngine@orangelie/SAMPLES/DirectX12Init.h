@@ -13,13 +13,13 @@ protected:
 		auto rtvHandle = CurrentBackBufferView();
 		auto dsvHandle = DepthStencilView();
 
-		using oragelie::CppStdUtil::unmove;
+		using orangelie::CppStdUtil::unmove;
 		m_CommandList->ResourceBarrier(1, &unmove(CD3DX12_RESOURCE_BARRIER::Transition(
 			SwapChainResource(),
 			D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET)));
 
-		const FLOAT color[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+		const FLOAT color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		m_CommandList->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
 		m_CommandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 

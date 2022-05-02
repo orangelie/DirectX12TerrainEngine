@@ -37,7 +37,7 @@
 } \
 
 
-namespace oragelie {
+namespace orangelie {
 	namespace CppStdUtil {
 		template <class _Tp>
 		_Tp& unmove(_Tp&& ____TpTp__) {

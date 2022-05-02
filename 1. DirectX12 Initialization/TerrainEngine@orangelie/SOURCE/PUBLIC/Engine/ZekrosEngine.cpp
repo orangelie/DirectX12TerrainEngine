@@ -22,6 +22,8 @@ namespace orangelie {
 		}
 
 		ZekrosEngine::~ZekrosEngine() {
+			if (m_Device != nullptr)
+				FlushCommandQueue();
 		}
 
 		void ZekrosEngine::Initialize(int maxScreenWidth, int maxScreenHeight, bool isFullscreenMode) {
@@ -219,7 +221,7 @@ namespace orangelie {
 			clearValue.DepthStencil.Depth = 1.0f;
 			clearValue.DepthStencil.Stencil = 0;
 
-			using oragelie::CppStdUtil::unmove;
+			using orangelie::CppStdUtil::unmove;
 			HR(m_Device->CreateCommittedResource(
 				&unmove(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT)),
 				D3D12_HEAP_FLAG_NONE,
@@ -319,7 +321,7 @@ namespace orangelie {
 		}
 
 		D3D12_CPU_DESCRIPTOR_HANDLE ZekrosEngine::CurrentBackBufferView() const {
-			using oragelie::CppStdUtil::unmove;
+			using orangelie::CppStdUtil::unmove;
 			return unmove(CD3DX12_CPU_DESCRIPTOR_HANDLE(m_D3D12Interface->GetRtvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
 				m_CurrentSwapBufferIndex, m_D3D12Interface->GetDsvDescriptorIncrementSize()));
 		}

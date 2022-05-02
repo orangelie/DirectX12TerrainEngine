@@ -163,10 +163,12 @@
     <ClInclude Include="HEADER\PUBLIC\DxInterface\InterfaceD3D12.h" />
     <ClInclude Include="HEADER\PUBLIC\DxInterface\InterfeceDxgi.h" />
     <ClInclude Include="HEADER\PUBLIC\Engine\ZekrosEngine.h" />
+    <ClInclude Include="HEADER\PUBLIC\Gpu\UploadBuffer.h" />
     <ClInclude Include="HEADER\PUBLIC\Time\GameTimer.h" />
     <ClInclude Include="HEADER\PUBLIC\Utility\CppStdUtil.h" />
     <ClInclude Include="HEADER\PUBLIC\Utility\DxgiUtil.h" />
     <ClInclude Include="HEADER\PUBLIC\Windows\Windows.h" />
+    <ClInclude Include="HEADER\PUBLIC\Windows\Wrl.h" />
     <ClInclude Include="SAMPLES\DirectX12Init.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

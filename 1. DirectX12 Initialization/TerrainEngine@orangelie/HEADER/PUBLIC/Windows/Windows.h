@@ -21,9 +21,8 @@
 
 #include <Windows.h>
 #include <windowsx.h>
-#include <wrl.h>
 
-using namespace Microsoft::WRL;
+#include "Wrl.h"
 
 namespace orangelie {
 	namespace Windows {

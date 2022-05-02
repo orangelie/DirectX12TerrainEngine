@@ -67,6 +67,12 @@
     <Filter Include="엔진목록">
       <UniqueIdentifier>{cd4f73f0-4f7b-4bc1-8f83-dc56ec87a76d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Gpu">
+      <UniqueIdentifier>{5880ba1c-95c7-479c-95cc-5bf67360318a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Gpu">
+      <UniqueIdentifier>{391114e8-22db-4553-9971-3fa73cf4dc09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -127,6 +133,12 @@
     </ClInclude>
     <ClInclude Include="HEADER\PUBLIC\DxInterface\InterfaceD3D12.h">
       <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\Gpu\UploadBuffer.h">
+      <Filter>헤더 파일\PUBLIC\Gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\Windows\Wrl.h">
+      <Filter>헤더 파일\PUBLIC\Windows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
