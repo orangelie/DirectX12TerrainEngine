@@ -22,5 +22,13 @@ namespace orangelie {
 
 		InterfaceDxgi::~InterfaceDxgi() {
 		}
+
+		void InterfaceDxgi::BuildDxgiFactory() {
+			HR(CreateDXGIFactory1(IID_PPV_ARGS(m_DxgiFactory.GetAddressOf())));
+		}
+
+		IDXGIFactory4* InterfaceDxgi::GetFactory4() const {
+			return m_DxgiFactory.Get();
+		}
 	}
 }

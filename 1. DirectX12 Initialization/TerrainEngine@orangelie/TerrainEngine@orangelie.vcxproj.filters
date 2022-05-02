@@ -58,8 +58,14 @@
     <Filter Include="소스 파일\PRIVATE\Texture">
       <UniqueIdentifier>{8ef07bb7-288e-43dc-ae3f-8667f9f0f671}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\SAMPLES">
-      <UniqueIdentifier>{2341368a-34aa-4767-b294-ba9bd9150b8d}</UniqueIdentifier>
+    <Filter Include="헤더 파일\PUBLIC\Time">
+      <UniqueIdentifier>{aeb94605-d225-4e11-8161-c647bdcb4d7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Time">
+      <UniqueIdentifier>{e44351b5-a626-40eb-8157-17462676fef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="엔진목록">
+      <UniqueIdentifier>{cd4f73f0-4f7b-4bc1-8f83-dc56ec87a76d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,14 +81,17 @@
     <ClCompile Include="SOURCE\PUBLIC\Engine\ZekrosEngine.cpp">
       <Filter>소스 파일\PUBLIC\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\SAMPLES\DirectX12Init.cpp">
-      <Filter>소스 파일\SAMPLES</Filter>
-    </ClCompile>
     <ClCompile Include="SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp">
       <Filter>소스 파일\PUBLIC\DxInterface</Filter>
     </ClCompile>
     <ClCompile Include="SOURCE\PUBLIC\Utility\DxgiUtil.cpp">
       <Filter>소스 파일\PUBLIC\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\PUBLIC\Time\GameTimer.cpp">
+      <Filter>소스 파일\PUBLIC\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\PUBLIC\DxInterface\InterfaceD3D12.cpp">
+      <Filter>소스 파일\PUBLIC\DxInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="HEADER\PUBLIC\Utility\DxgiUtil.h">
       <Filter>헤더 파일\PUBLIC\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\Time\GameTimer.h">
+      <Filter>헤더 파일\PUBLIC\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="SAMPLES\DirectX12Init.h">
+      <Filter>엔진목록</Filter>
+    </ClInclude>
+    <ClInclude Include="HEADER\PUBLIC\DxInterface\InterfaceD3D12.h">
+      <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@
 
 
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS")
-#include "HEADER/PUBLIC/Engine/ZekrosEngine.h"
+#include "SAMPLES/DirectX12Init.h"
 
 int __stdcall WinMain(
 	_In_ HINSTANCE hInstance,
@@ -27,7 +27,7 @@ int __stdcall WinMain(
 	
 
 	try {
-		std::unique_ptr<orangelie::Engine::ZekrosEngine> zekrosEngine(new orangelie::Engine::ZekrosEngine);
+		std::unique_ptr<orangelie::Engine::ZekrosEngine> zekrosEngine(new DirectX12Init);
 		zekrosEngine->Initialize(920, 860, false);
 		zekrosEngine->Run();
 	}

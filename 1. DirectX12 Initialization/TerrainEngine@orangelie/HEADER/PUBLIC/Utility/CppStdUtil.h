@@ -29,4 +29,9 @@
 	throw std::runtime_error(__err_message); \
 } \
 
-#define HR(n) if(n)
+#define HR(e) { \
+	if(FAILED(e)) { \
+		std::string __err_message = std::string(__FILE__) + std::to_string(__LINE__) + std::string(__FUNCTION__); \
+		throw std::runtime_error(__err_message); \
+	} \
+} \
