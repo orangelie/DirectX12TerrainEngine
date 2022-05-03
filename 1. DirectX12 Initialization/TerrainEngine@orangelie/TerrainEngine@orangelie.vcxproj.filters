@@ -43,15 +43,6 @@
     <Filter Include="헤더 파일\PUBLIC\Windows">
       <UniqueIdentifier>{12da2491-76d7-496b-8486-302b5c41e897}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\PRIVATE">
-      <UniqueIdentifier>{9eb8a6bd-c718-4c87-9ff3-d8aea317b956}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일\PRIVATE\DxInterface">
-      <UniqueIdentifier>{114a5cfb-5584-4e21-9f8a-9ae27521ac46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일\PRIVATE\Texture">
-      <UniqueIdentifier>{601c350c-8c7b-4df6-958a-12584f9d2467}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\PRIVATE">
       <UniqueIdentifier>{d7a2bee9-d1e2-49d1-b9eb-837393109d77}</UniqueIdentifier>
     </Filter>
@@ -73,72 +64,87 @@
     <Filter Include="소스 파일\PUBLIC\Gpu">
       <UniqueIdentifier>{391114e8-22db-4553-9971-3fa73cf4dc09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\PRIVATE">
+      <UniqueIdentifier>{47d2ee4a-5bdb-4c02-ad9f-d93b569902eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PRIVATE\DxInterface">
+      <UniqueIdentifier>{02a23dbf-b36b-460a-9a0e-d7165b0b3f12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PRIVATE\Texture">
+      <UniqueIdentifier>{6a0a831a-95f3-4d19-957a-d805f77b0225}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\PRIVATE\Texture\DDSTextureLoader.cpp">
+    <ClCompile Include="..\..\STATIC\SOURCE\PRIVATE\Texture\DDSTextureLoader.cpp">
       <Filter>소스 파일\PRIVATE\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\PUBLIC\Windows\Windows.cpp">
-      <Filter>소스 파일\PUBLIC\Windows</Filter>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\DxInterface\InterfaceD3D12.cpp">
+      <Filter>소스 파일\PUBLIC\DxInterface</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\PUBLIC\Engine\ZekrosEngine.cpp">
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp">
+      <Filter>소스 파일\PUBLIC\DxInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Engine\ZekrosEngine.cpp">
       <Filter>소스 파일\PUBLIC\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp">
-      <Filter>소스 파일\PUBLIC\DxInterface</Filter>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Gpu\FrameResources.cpp">
+      <Filter>소스 파일\PUBLIC\Gpu</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\PUBLIC\Utility\DxgiUtil.cpp">
-      <Filter>소스 파일\PUBLIC\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="SOURCE\PUBLIC\Time\GameTimer.cpp">
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Time\GameTimer.cpp">
       <Filter>소스 파일\PUBLIC\Time</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\PUBLIC\DxInterface\InterfaceD3D12.cpp">
-      <Filter>소스 파일\PUBLIC\DxInterface</Filter>
-    </ClCompile>
-    <ClCompile Include="SOURCE\PUBLIC\Utility\CppStdUtil.cpp">
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Utility\CppStdUtil.cpp">
       <Filter>소스 파일\PUBLIC\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Utility\DxgiUtil.cpp">
+      <Filter>소스 파일\PUBLIC\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Windows\Windows.cpp">
+      <Filter>소스 파일\PUBLIC\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HEADER\PRIVATE\DxInterface\d3dx12.h">
-      <Filter>헤더 파일\PRIVATE\DxInterface</Filter>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfaceD3D12.h">
+      <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
     </ClInclude>
-    <ClInclude Include="HEADER\PRIVATE\Texture\DDSTextureLoader.h">
-      <Filter>헤더 파일\PRIVATE\Texture</Filter>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfeceDxgi.h">
+      <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
     </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\Windows\Windows.h">
-      <Filter>헤더 파일\PUBLIC\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\Engine\ZekrosEngine.h">
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Engine\ZekrosEngine.h">
       <Filter>헤더 파일\PUBLIC\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\Utility\CppStdUtil.h">
-      <Filter>헤더 파일\PUBLIC\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\DxInterface\InterfeceDxgi.h">
-      <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
-    </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\Utility\DxgiUtil.h">
-      <Filter>헤더 파일\PUBLIC\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\Time\GameTimer.h">
-      <Filter>헤더 파일\PUBLIC\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="SAMPLES\DirectX12Init.h">
-      <Filter>엔진목록</Filter>
-    </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\DxInterface\InterfaceD3D12.h">
-      <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
-    </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\Gpu\UploadBuffer.h">
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\FrameResources.h">
       <Filter>헤더 파일\PUBLIC\Gpu</Filter>
     </ClInclude>
-    <ClInclude Include="HEADER\PUBLIC\Windows\Wrl.h">
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\UploadBuffer.h">
+      <Filter>헤더 파일\PUBLIC\Gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Time\GameTimer.h">
+      <Filter>헤더 파일\PUBLIC\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Utility\CppStdUtil.h">
+      <Filter>헤더 파일\PUBLIC\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Utility\DxgiUtil.h">
+      <Filter>헤더 파일\PUBLIC\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Windows\Windows.h">
       <Filter>헤더 파일\PUBLIC\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Windows\Wrl.h">
+      <Filter>헤더 파일\PUBLIC\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\SAMPLES\DirectX12Init.h">
+      <Filter>엔진목록</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PRIVATE\DxInterface\d3dx12.h">
+      <Filter>헤더 파일\PRIVATE\DxInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PRIVATE\Texture\DDSTextureLoader.h">
+      <Filter>헤더 파일\PRIVATE\Texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

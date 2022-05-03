@@ -1,6 +1,7 @@
 ﻿  InterfaceD3D12.cpp
   InterfeceDxgi.cpp
   ZekrosEngine.cpp
+  FrameResources.cpp
   GameTimer.cpp
   DxgiUtil.cpp
   Windows.cpp
