@@ -1,10 +1,2 @@
-﻿  InterfaceD3D12.cpp
-  InterfeceDxgi.cpp
-  ZekrosEngine.cpp
-  FrameResources.cpp
-  GameTimer.cpp
-  DxgiUtil.cpp
-  Windows.cpp
-  main.cpp
-  코드를 생성하고 있습니다...
+﻿  main.cpp
   TerrainEngine@orangelie.vcxproj -> C:\Users\박상우\Desktop\Github\DirectX12TerrainEngine\1. DirectX12 Initialization\x64\Debug\TerrainEngine@orangelie.exe
