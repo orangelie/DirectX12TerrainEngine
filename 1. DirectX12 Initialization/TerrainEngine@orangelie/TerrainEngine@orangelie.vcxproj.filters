@@ -90,9 +90,6 @@
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Engine\ZekrosEngine.cpp">
       <Filter>소스 파일\PUBLIC\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Gpu\FrameResources.cpp">
-      <Filter>소스 파일\PUBLIC\Gpu</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Time\GameTimer.cpp">
       <Filter>소스 파일\PUBLIC\Time</Filter>
     </ClCompile>
@@ -105,6 +102,9 @@
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Windows\Windows.cpp">
       <Filter>소스 파일\PUBLIC\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="FrameResources.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfaceD3D12.h">
@@ -112,12 +112,6 @@
     </ClInclude>
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfeceDxgi.h">
       <Filter>헤더 파일\PUBLIC\DxInterface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Engine\ZekrosEngine.h">
-      <Filter>헤더 파일\PUBLIC\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\FrameResources.h">
-      <Filter>헤더 파일\PUBLIC\Gpu</Filter>
     </ClInclude>
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\UploadBuffer.h">
       <Filter>헤더 파일\PUBLIC\Gpu</Filter>
@@ -145,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="..\..\STATIC\HEADER\PRIVATE\Texture\DDSTextureLoader.h">
       <Filter>헤더 파일\PRIVATE\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Engine\ZekrosEngine.h">
+      <Filter>헤더 파일\PUBLIC\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameResources.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

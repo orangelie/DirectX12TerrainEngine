@@ -15,7 +15,7 @@
 
 #include "../Windows/Windows.h"
 #include "../Time/GameTimer.h"
-#include "../Gpu/FrameResources.h"
+#include "FrameResources.h"
 #include "../DxInterface/InterfeceDxgi.h"
 #include "../DxInterface/InterfaceD3D12.h"
 
@@ -83,8 +83,8 @@ namespace orangelie {
 
 			// FrameResources
 			static const size_t gFrameResourceCount = 3;
-			std::vector<std::unique_ptr<orangelie::Gpu::FrameResource>> m_FrameResources;
-			orangelie::Gpu::FrameResource* m_CurrFrameResource;
+			std::vector<std::unique_ptr<orangelie::FrameResource>> m_FrameResources;
+			orangelie::FrameResource* m_CurrFrameResource;
 			size_t m_CurrFrameResourceIndex = 0;
 
 			// Resource Fence

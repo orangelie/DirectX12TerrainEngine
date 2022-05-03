@@ -118,7 +118,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Users\박상우\Desktop\Github\DirectX12TerrainEngine\STATIC;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\winrt;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\um;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\shared;D:\Library\DirectX\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\박상우\Desktop\Github\DirectX12TerrainEngine\1. DirectX12 Initialization\TerrainEngine%40orangelie;C:\Users\박상우\Desktop\Github\DirectX12TerrainEngine\STATIC;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\winrt;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\um;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.22000.0\shared;D:\Library\DirectX\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,11 +151,11 @@
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\DxInterface\InterfaceD3D12.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Engine\ZekrosEngine.cpp" />
-    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Gpu\FrameResources.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Time\GameTimer.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Utility\CppStdUtil.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Utility\DxgiUtil.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Windows\Windows.cpp" />
+    <ClCompile Include="FrameResources.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,7 +164,6 @@
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfaceD3D12.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfeceDxgi.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Engine\ZekrosEngine.h" />
-    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\FrameResources.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\UploadBuffer.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Time\GameTimer.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Utility\CppStdUtil.h" />
@@ -172,6 +171,7 @@
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Windows\Windows.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Windows\Wrl.h" />
     <ClInclude Include="..\..\STATIC\SAMPLES\DirectX12Init.h" />
+    <ClInclude Include="FrameResources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

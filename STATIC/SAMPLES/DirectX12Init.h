@@ -4,7 +4,7 @@ class DirectX12Init : public orangelie::Engine::ZekrosEngine {
 private:
 	void BuildFrameResources() {
 		for (size_t i = 0; i < gFrameResourceCount; ++i) {
-			m_FrameResources.push_back(std::make_unique<orangelie::Gpu::FrameResource>(m_Device));
+			m_FrameResources.push_back(std::make_unique<orangelie::FrameResource>(m_Device));
 		}
 	}
 
