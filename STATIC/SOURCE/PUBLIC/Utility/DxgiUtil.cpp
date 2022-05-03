@@ -56,7 +56,7 @@ namespace orangelie {
 			D3D12_SUBRESOURCE_DATA subResourceData = {};
 
 			subResourceData.pData = data;
-			subResourceData.RowPitch = size;
+			subResourceData.RowPitch = (LONG_PTR)size;
 			subResourceData.SlicePitch = subResourceData.RowPitch;
 
 			UpdateSubresources<1>(CommandList, defaultBuffer.Get(), Uploader.Get(), 0, 0, 1, &subResourceData);
@@ -65,7 +65,7 @@ namespace orangelie {
 				&unmove(CD3DX12_RESOURCE_BARRIER::Transition(
 					defaultBuffer.Get(),
 					D3D12_RESOURCE_STATE_COPY_DEST,
-					D3D12_RESOURCE_STATE_COMMON)));
+					D3D12_RESOURCE_STATE_GENERIC_READ)));
 
 			return defaultBuffer;
 		}
