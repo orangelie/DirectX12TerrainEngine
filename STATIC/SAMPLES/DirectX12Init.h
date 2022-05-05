@@ -13,7 +13,6 @@ protected:
 		ZekrosEngine::OnResize();
 
 		// TODO: Something here...
-		
 	}
 
 	virtual void init() {

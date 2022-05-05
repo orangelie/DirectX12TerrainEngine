@@ -23,6 +23,7 @@
 #include <vector>
 #include <tuple>
 #include <unordered_map>
+#include <array>
 
 #define THROW(e) { \
 	std::string __err_message = std::string(__FILE__) + ": " + e; \

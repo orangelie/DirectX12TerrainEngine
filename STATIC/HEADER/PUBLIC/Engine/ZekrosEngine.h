@@ -18,6 +18,10 @@
 #include "FrameResources.h"
 #include "../DxInterface/InterfeceDxgi.h"
 #include "../DxInterface/InterfaceD3D12.h"
+#include "../Shader/ShaderSystem.h"
+#include "../Mesh/MeshTools.h"
+#include "../Camera/DefaultCamera.h"
+
 
 namespace orangelie {
 	namespace Engine {
@@ -30,6 +34,7 @@ namespace orangelie {
 
 			void Initialize(int maxScreenWidth, int maxScreenHeight, bool isFullscreenMode);
 			void Run();
+			ID3D12Device* GeDevice() { return m_D3D12Interface->GetDevice(); };
 
 			static ZekrosEngine* gZekrosEngine;
 			virtual LRESULT MessageHandler(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
@@ -91,6 +96,13 @@ namespace orangelie {
 			ID3D12Fence* m_Fence = nullptr;
 			UINT64 m_CurrentFenceCount = 0;
 
+			// format
+			const DXGI_FORMAT m_BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			const DXGI_FORMAT m_DepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+			// hwnd
+			HWND m_hWnd = nullptr;
+
 		private:
 			std::unique_ptr<orangelie::Windows::Win32> m_Win32 = nullptr;
 			orangelie::Time::GameTimer m_GameTimer;
@@ -100,9 +112,7 @@ namespace orangelie {
 			bool m_IsEnginePaused = false;
 			bool m_IsSizeMinimized = false;
 			bool m_IsSizeMaximized = false;
-
-			const DXGI_FORMAT m_BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-			const DXGI_FORMAT m_DepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			bool m_IsResizing = false;
 
 			ComPtr<ID3D12Resource> m_SwapChainBuffer[gBackBufferCount];
 			ComPtr<ID3D12Resource> m_DepthStencilBuffer = nullptr;

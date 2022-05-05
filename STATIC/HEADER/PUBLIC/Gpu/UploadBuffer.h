@@ -14,7 +14,6 @@
 #pragma once
 
 #include "../Utility/DxgiUtil.h"
-#include "../Windows/Windows.h"
 
 namespace orangelie {
 
@@ -27,8 +26,8 @@ namespace orangelie {
 			UploadBuffer(const UploadBuffer&) = delete;
 			UploadBuffer& operator=(const UploadBuffer&) = delete;
 			UploadBuffer(ID3D12Device* Device, size_t elementCount, bool isConstantBuffer) {
-				m_ElementByteSize = sizeof(T);
-				if (isConstantBuffer) m_ElementByteSize = orangelie::Utility::CalcConstantBufferByteSize(sizeof(T));
+				m_ElementByteSize = sizeof(_Tp);
+				if (isConstantBuffer) m_ElementByteSize = orangelie::Utility::Tools::CalcConstantBufferByteSize(sizeof(_Tp));
 
 				using orangelie::CppStdUtil::unmove;
 				HR(Device->CreateCommittedResource(&unmove(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD)),
@@ -50,8 +49,8 @@ namespace orangelie {
 				return m_MappedResource.Get();
 			}
 
-			void CopyData(int elementIndex, const T& data) {
-				CopyMemory(MappedData[elementIndex * m_ElementByteSize], &data, sizeof(T));
+			void CopyData(UINT elementIndex, const _Tp& data) {
+				CopyMemory(&MappedData[elementIndex * m_ElementByteSize], &data, sizeof(_Tp));
 			}
 
 		private:

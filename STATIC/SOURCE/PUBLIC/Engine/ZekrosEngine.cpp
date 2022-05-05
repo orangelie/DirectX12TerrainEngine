@@ -37,6 +37,7 @@ namespace orangelie {
 			// Win32
 			m_Win32 = std::make_unique<orangelie::Windows::Win32>();
 			m_Win32->Intialize(WindowProcedure, maxScreenWidth, maxScreenHeight, isFullscreenMode);
+			m_hWnd = m_Win32->GetHwnd();
 
 			// Factory
 			m_DxgiInterface = std::make_unique<orangelie::DxInterface::InterfaceDxgi>();
@@ -72,28 +73,25 @@ namespace orangelie {
 
 			m_GameTimer.Reset();
 
-			for (;;) {
+			while(msg.message != WM_QUIT) {
 				if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 					TranslateMessage(&msg);
 					DispatchMessageW(&msg);
 				}
-
-				if (msg.message == WM_QUIT) {
-					break;
-				}
-
-				m_GameTimer.Tick();
-
-				if (m_IsEnginePaused == false) {
-					update(m_GameTimer.DeltaTime());
-					draw(m_GameTimer.DeltaTime());
-				}
 				else {
-					Sleep(100);
+					m_GameTimer.Tick();
+
+					if (m_IsEnginePaused == false) {
+						update(m_GameTimer.DeltaTime());
+						draw(m_GameTimer.DeltaTime());
+					}
+					else {
+						Sleep(100);
+					}
 				}
 			}
 		}
-
+		
 		LRESULT ZekrosEngine::MessageHandler(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam) {
 			switch (uMessage) {
 			case WM_ACTIVATE:
@@ -115,7 +113,6 @@ namespace orangelie {
 					m_IsSizeMinimized = true;
 					m_IsSizeMaximized = false;
 					m_IsEnginePaused = true;
-					OnResize();
 				}
 
 				else if (wParam == SIZE_MAXIMIZED) {
@@ -129,10 +126,15 @@ namespace orangelie {
 					if (m_IsSizeMinimized) {
 						m_IsSizeMinimized = false;
 						m_IsEnginePaused = false;
+						OnResize();
 					}
-					if (m_IsSizeMaximized) {
+					else if (m_IsSizeMaximized) {
 						m_IsSizeMaximized = false;
 						m_IsEnginePaused = false;
+						OnResize();
+					}
+					else if (m_IsResizing) {
+
 					}
 				}
 				
@@ -140,10 +142,12 @@ namespace orangelie {
 
 			case WM_ENTERSIZEMOVE:
 				m_IsEnginePaused = true;
+				m_IsResizing = true;
 				m_GameTimer.Stop();
 				return 0;
 			case WM_EXITSIZEMOVE:
 				m_IsEnginePaused = false;
+				m_IsResizing = false;
 				m_GameTimer.Start();
 				OnResize();
 				return 0;
@@ -165,12 +169,12 @@ namespace orangelie {
 				return 0;
 
 			case WM_GETMINMAXINFO:
-				((MINMAXINFO*)lParam)->ptMinTrackSize = POINT(200, 200);
+				((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
+				((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
 				return 0;
 
 			case WM_MENUCHAR:
-				MAKELRESULT(0, MNC_CLOSE);
-				return 0;
+				return MAKELRESULT(0, MNC_CLOSE);
 
 			case WM_KEYDOWN:
 				if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
@@ -188,9 +192,9 @@ namespace orangelie {
 		}
 
 		void ZekrosEngine::OnResize() {
-			assert(m_D3D12Interface->GetDevice());
-			assert(m_DxgiInterface->GetSwapChain());
-			assert(m_CommandAllocator);
+			// assert(m_D3D12Interface->GetDevice());
+			// assert(m_DxgiInterface->GetSwapChain());
+			// assert(m_CommandAllocator);
 
 			FlushCommandQueue();
 
@@ -200,7 +204,7 @@ namespace orangelie {
 			}
 			m_DepthStencilBuffer.Reset();
 
-			HR(m_DxgiInterface->GetSwapChain()->ResizeBuffers(gBackBufferCount,
+			HR(m_DxgiInterface->GetSwapChain()->ResizeBuffers((UINT)gBackBufferCount,
 				m_ClientWidth, m_ClientHeight, m_BackBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 
 			m_CurrentSwapBufferIndex = 0;
@@ -246,10 +250,9 @@ namespace orangelie {
 			depthStencilViewDesc.Texture2D.MipSlice = 0;
 			depthStencilViewDesc.Format = m_DepthStencilFormat;
 
-			CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_D3D12Interface->GetDsvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
 			m_Device->CreateDepthStencilView(m_DepthStencilBuffer.Get(),
 				&depthStencilViewDesc,
-				dsvHandle);
+				m_D3D12Interface->GetDsvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
 
 			m_CommandList->ResourceBarrier(1,
 				&unmove(CD3DX12_RESOURCE_BARRIER::Transition(
@@ -274,21 +277,20 @@ namespace orangelie {
 			auto fence = m_D3D12Interface->GetFence();
 
 			++m_CurrentFenceCount;
-			m_CommandQueue->Signal(fence,
-				m_CurrentFenceCount);
+			HR(m_CommandQueue->Signal(fence, m_CurrentFenceCount));
 
 			if (fence->GetCompletedValue() < m_CurrentFenceCount) {
 				HANDLE hEvent = CreateEventEx(
-					nullptr,
-					nullptr,
-					false,
+					0,
+					0,
+					0,
 					EVENT_ALL_ACCESS);
 
 				HR(fence->SetEventOnCompletion(
 					m_CurrentFenceCount,
 					hEvent));
 
-				WaitForSingleObject(hEvent, 0xffffffff);
+				WaitForSingleObject(hEvent, 0xFFFFFFFF);
 				CloseHandle(hEvent);
 			}
 		}

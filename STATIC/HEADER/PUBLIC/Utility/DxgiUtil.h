@@ -16,7 +16,6 @@
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler")
-#pragma comment(lib, "d3dcompiler")
 
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -36,12 +35,19 @@ namespace orangelie {
 
 	namespace Utility {
 
-		static UINT CalcConstantBufferByteSize(UINT cbSize);
-		static ComPtr<ID3D12Resource> CreateDefaultBuffer(
-			ID3D12Device* Device,
-			ID3D12GraphicsCommandList* CommandList,
-			const void* data,
-			UINT64 size,
-			ComPtr<ID3D12Resource>& Uploader);
+		class Tools {
+		public:
+			static UINT CalcConstantBufferByteSize(UINT cbSize);
+
+			static ComPtr<ID3D12Resource> CreateDefaultBuffer(
+				ID3D12Device* Device,
+				ID3D12GraphicsCommandList* CommandList,
+				const void* data,
+				UINT64 size,
+				ComPtr<ID3D12Resource>& Uploader);
+
+			static const XMFLOAT4X4 Identity();
+
+		};
 	}
 }

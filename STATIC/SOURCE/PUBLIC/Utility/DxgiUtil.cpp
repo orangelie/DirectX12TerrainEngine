@@ -17,11 +17,12 @@ namespace orangelie {
 
 	namespace Utility {
 
-		UINT CalcConstantBufferByteSize(UINT cbSize) {
+		
+		UINT Tools::CalcConstantBufferByteSize(UINT cbSize) {
 			return (cbSize + 255) & ~255;
 		}
 
-		ComPtr<ID3D12Resource> CreateDefaultBuffer(
+		ComPtr<ID3D12Resource> Tools::CreateDefaultBuffer(
 			ID3D12Device* Device,
 			ID3D12GraphicsCommandList* CommandList,
 			const void* data,
@@ -56,7 +57,7 @@ namespace orangelie {
 			D3D12_SUBRESOURCE_DATA subResourceData = {};
 
 			subResourceData.pData = data;
-			subResourceData.RowPitch = (LONG_PTR)size;
+			subResourceData.RowPitch = size;
 			subResourceData.SlicePitch = subResourceData.RowPitch;
 
 			UpdateSubresources<1>(CommandList, defaultBuffer.Get(), Uploader.Get(), 0, 0, 1, &subResourceData);
@@ -68,6 +69,16 @@ namespace orangelie {
 					D3D12_RESOURCE_STATE_GENERIC_READ)));
 
 			return defaultBuffer;
+		}
+
+		const XMFLOAT4X4 Tools::Identity() {
+			const XMFLOAT4X4 i = XMFLOAT4X4(
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f);
+
+			return i;
 		}
 	}
 }
