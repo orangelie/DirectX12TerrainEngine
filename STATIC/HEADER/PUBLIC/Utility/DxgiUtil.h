@@ -31,6 +31,8 @@ using namespace DirectX;
 #include "../Windows/Wrl.h"
 #include "../Utility/CppStdUtil.h"
 
+static const int gNumFramesDirty = 3;
+
 namespace orangelie {
 
 	namespace Utility {

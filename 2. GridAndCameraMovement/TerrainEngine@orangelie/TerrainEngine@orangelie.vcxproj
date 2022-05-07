@@ -152,8 +152,12 @@
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\DxInterface\InterfaceD3D12.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Engine\ZekrosEngine.cpp" />
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Lighting\LightingUtils.cpp" />
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Mesh\GeometryGenerator.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Mesh\MeshTools.cpp" />
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Rendering\RenderSystem.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Shader\ShaderSystem.cpp" />
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Texture\TextureTools.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Time\GameTimer.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Utility\CppStdUtil.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Utility\DxgiUtil.cpp" />
@@ -169,8 +173,12 @@
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfeceDxgi.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Engine\ZekrosEngine.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\UploadBuffer.h" />
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Lighting\LightingUtils.h" />
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Mesh\GeometryGenerator.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Mesh\MeshTools.h" />
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Rendering\RenderSystem.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Shader\ShaderSystem.h" />
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Texture\TextureTools.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Time\GameTimer.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Utility\CppStdUtil.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Utility\DxgiUtil.h" />

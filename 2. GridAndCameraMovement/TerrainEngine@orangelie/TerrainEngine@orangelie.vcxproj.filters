@@ -91,6 +91,30 @@
     <Filter Include="소스 파일\PUBLIC\Camera">
       <UniqueIdentifier>{24927fda-a3ed-446f-9ca6-497ed6088651}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Rendering">
+      <UniqueIdentifier>{be3f82bd-23d2-46d0-b333-8aa4cded8ec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Rendering">
+      <UniqueIdentifier>{e78ddde2-1671-42b8-8b91-74b54b83c865}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Lighting">
+      <UniqueIdentifier>{ac88e42a-9c18-476b-9d45-2f21679a386c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Lighting">
+      <UniqueIdentifier>{798d1d9d-89b7-4bcf-903c-2c6ac1b8b0d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Font">
+      <UniqueIdentifier>{6bac1005-af12-447c-a446-72b4e4f329e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Font">
+      <UniqueIdentifier>{e56ca797-5dc6-444a-b409-12d6909f3be4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PUBLIC\Texture">
+      <UniqueIdentifier>{8e1709b7-6a73-4ec9-ba3f-4195541c45bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PUBLIC\Texture">
+      <UniqueIdentifier>{0f0018cf-050b-4b7a-be4d-b447b9452ef9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,6 +155,18 @@
     </ClCompile>
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Camera\DefaultCamera.cpp">
       <Filter>소스 파일\PUBLIC\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Rendering\RenderSystem.cpp">
+      <Filter>소스 파일\PUBLIC\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Mesh\GeometryGenerator.cpp">
+      <Filter>소스 파일\PUBLIC\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Lighting\LightingUtils.cpp">
+      <Filter>소스 파일\PUBLIC\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Texture\TextureTools.cpp">
+      <Filter>소스 파일\PUBLIC\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +220,18 @@
     </ClInclude>
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Camera\DefaultCamera.h">
       <Filter>헤더 파일\PUBLIC\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Rendering\RenderSystem.h">
+      <Filter>헤더 파일\PUBLIC\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Mesh\GeometryGenerator.h">
+      <Filter>헤더 파일\PUBLIC\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Lighting\LightingUtils.h">
+      <Filter>헤더 파일\PUBLIC\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Texture\TextureTools.h">
+      <Filter>헤더 파일\PUBLIC\Texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -26,7 +26,7 @@ namespace orangelie {
 			DefaultCamera& operator=(const DefaultCamera&) = delete;
 			~DefaultCamera();
 
-			void SetLens(float fovY, float aspectRatio, float nearZ, float farZ);
+			void SetLens(float width, float height, float fovY, float aspectRatio, float nearZ, float farZ);
 			void UpdateViewMatrix();
 
 			void LookAt(XMFLOAT3 pos, XMFLOAT3 target, XMFLOAT3 up);
@@ -37,6 +37,10 @@ namespace orangelie {
 			XMFLOAT3 GetPosition() const;
 			XMFLOAT4X4 GetViewMatrix() const;
 			XMFLOAT4X4 GetProjectionMatrix() const;
+			XMFLOAT4X4 GetOrthoMatrix() const;
+
+			float GetNearZ() const;
+			float GetFarZ() const;
 
 			// Movement
 			void SetPosition(float x, float y, float z);
@@ -55,6 +59,9 @@ namespace orangelie {
 
 			XMFLOAT4X4 m_View = orangelie::Utility::Tools::Identity();
 			XMFLOAT4X4 m_Projection = orangelie::Utility::Tools::Identity();
+			XMFLOAT4X4 m_Ortho = orangelie::Utility::Tools::Identity();
+
+			float m_NearWindowHeight, m_FarWindowHeight;
 
 			float m_FovY, m_Aspect;
 			float m_NearZ, m_FarZ;

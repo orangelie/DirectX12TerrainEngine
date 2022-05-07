@@ -1,39 +1,40 @@
+/*
+*
+* < GridAndCameraMovement.h >
+* Github: https://github.com/orangelie
+* // Copyright (C) 2022 by orangelie, Inc. All right reserved.
+* // MIT License
+*
+*/
+
+
+
+
+
 #include "HEADER/PUBLIC/Engine/ZekrosEngine.h"
-
-static const int gNumFramesDirty = 3;
-
-struct RenderItem {
-	RenderItem() = default;
-
-	XMFLOAT4X4 World = orangelie::Utility::Tools::Identity();
-
-	int NumFramesDirty = gNumFramesDirty;
-
-	orangelie::Mesh::MeshGeometry* MeshGeo = nullptr;
-
-	D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology;
-
-	UINT ObjCBIndex = 0;
-
-	UINT IndexCount;
-	UINT StartIndexLocation;
-	UINT BaseVertexLocation;
-};
-
-struct Vertex {
-	XMFLOAT3 Position;
-	XMFLOAT4 Color;
-};
 
 class GridAndCameraMovement : public orangelie::Engine::ZekrosEngine {
 private:
+	void LoadTextures() {
+		m_TextureLoader.AddTexture("whiteb", L"./Textures/whiteBlock.dds", m_Device, m_CommandList.Get());
+		m_TextureLoader.AddTexture("stoneb", L"./Textures/StoneBlock.dds", m_Device, m_CommandList.Get());
+	}
+
 	void BuildRootSignature() {
-		CD3DX12_ROOT_PARAMETER rootParameters[2];
+		CD3DX12_DESCRIPTOR_RANGE srvRange;
+		srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 0, 0);
 
-		rootParameters[0].InitAsConstantBufferView(0);
-		rootParameters[1].InitAsConstantBufferView(1);
+		const size_t parameter_size = 4;
+		CD3DX12_ROOT_PARAMETER rootParameters[parameter_size];
 
-		CD3DX12_ROOT_SIGNATURE_DESC signatureDesc(2, rootParameters, 0, nullptr,
+		rootParameters[0].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL); // SrvHeap
+		rootParameters[1].InitAsShaderResourceView(0, 1); // Materials
+		rootParameters[2].InitAsConstantBufferView(0); // Object
+		rootParameters[3].InitAsConstantBufferView(1); // Pass
+
+		auto samplers = GetStaticSamplers();
+
+		CD3DX12_ROOT_SIGNATURE_DESC signatureDesc(parameter_size, rootParameters, (UINT)samplers.size(), samplers.data(),
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 
@@ -44,13 +45,45 @@ private:
 			ppCode.GetAddressOf(), ppErrorMsgs.GetAddressOf());
 
 		if (ppErrorMsgs != nullptr) {
-			MessageBoxA(0, (char*)ppErrorMsgs->GetBufferPointer(), "Rootsignature Error", MB_ICONWARNING);
+			MessageBoxA(0, (char*)ppErrorMsgs->GetBufferPointer(), "RootSignature Error", MB_ICONWARNING);
 		}
 		HR(hResult);
 
 		HR(m_Device->CreateRootSignature(0,
 			ppCode->GetBufferPointer(), ppCode->GetBufferSize(),
 			IID_PPV_ARGS(m_RootSignature.GetAddressOf())));
+	}
+
+	void BuildDescriptorHeap() {
+		D3D12_DESCRIPTOR_HEAP_DESC SrvHeapDesc = {};
+		SrvHeapDesc.NumDescriptors = 2;
+		SrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		SrvHeapDesc.NodeMask = 0;
+		SrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+
+		HR(m_Device->CreateDescriptorHeap(&SrvHeapDesc, IID_PPV_ARGS(m_SrvHeap.GetAddressOf())));
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
+
+		auto whiteb = m_TextureLoader.GetTexture("whiteb")->GPUHeap;
+		auto stoneb = m_TextureLoader.GetTexture("stoneb")->GPUHeap;
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
+		SrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		SrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		SrvDesc.Format = whiteb->GetDesc().Format;
+		SrvDesc.Texture2D.MipLevels = whiteb->GetDesc().MipLevels;
+		SrvDesc.Texture2D.MostDetailedMip = 0;
+		SrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+		m_Device->CreateShaderResourceView(whiteb.Get(), &SrvDesc, hDescriptor);
+
+		hDescriptor.Offset(1, m_CbvSrvUavSize);
+
+		SrvDesc.Format = stoneb->GetDesc().Format;
+		SrvDesc.Texture2D.MipLevels = stoneb->GetDesc().MipLevels;
+
+		m_Device->CreateShaderResourceView(stoneb.Get(), &SrvDesc, hDescriptor);
 	}
 
 	void BuildShaderSystem() {
@@ -62,57 +95,36 @@ private:
 
 		m_ShaderSys->ShaderCompileFromFile("sha1", RasterizeObj);
 
-		m_InputElementDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,
-			0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-		m_InputElementDesc.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,
-			0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		m_InputElementDesc =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		};
 	}
 
-	void BuildBoxGeometry() {
-		std::array<Vertex, 8> vertices =
-		{
-			Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), orangelie::Mesh::MeshColor::Cyan }),
-			Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), orangelie::Mesh::MeshColor::Magenta }),
-			Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), orangelie::Mesh::MeshColor::Yellow }),
-			Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), orangelie::Mesh::MeshColor::Red }),
-			Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), orangelie::Mesh::MeshColor::Green }),
-			Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), orangelie::Mesh::MeshColor::Blue }),
-			Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), orangelie::Mesh::MeshColor::Black }),
-			Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), orangelie::Mesh::MeshColor::White })
-		};
+	void BuildGridGeometry() {
+		orangelie::Mesh::GeometryGenerator geoGen;
+		auto gridGeo = geoGen.CreateGrid(160.0f, 160.0f, 50, 50);
 
-		std::array<std::uint16_t, 36> indices =
-		{
-			// front face
-			0, 1, 2,
-			0, 2, 3,
+		using orangelie::Mesh::Vertex2;
+		std::vector<Vertex2> vertices(gridGeo.vertices.size());
 
-			// back face
-			4, 6, 5,
-			4, 7, 6,
+		for (size_t i = 0; i < gridGeo.vertices.size(); ++i) {
+			vertices[i].Position = gridGeo.vertices[i].Position;
+			vertices[i].Tangent = gridGeo.vertices[i].Tangent;
+			vertices[i].Normal = gridGeo.vertices[i].Normal;
+			vertices[i].TexC = gridGeo.vertices[i].TexC;
+		}
 
-			// left face
-			4, 5, 1,
-			4, 1, 0,
+		std::vector<std::uint16_t> indices = gridGeo.GetIndices16();
 
-			// right face
-			3, 2, 6,
-			3, 6, 7,
-
-			// top face
-			1, 5, 6,
-			1, 6, 2,
-
-			// bottom face
-			4, 0, 3,
-			4, 3, 7
-		};
-
-		const UINT vertexBufferByteSize = (UINT)vertices.size() * sizeof(Vertex);
+		const UINT vertexBufferByteSize = (UINT)vertices.size() * sizeof(Vertex2);
 		const UINT indexBufferByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
 		auto meshGeo = std::make_unique<orangelie::Mesh::MeshGeometry>();
-		meshGeo->Name = "shapeGeo";
+		meshGeo->Name = "gridGeo";
 
 		HR(D3DCreateBlob(vertexBufferByteSize, &meshGeo->CpuVertexBuffer));
 		CopyMemory(meshGeo->CpuVertexBuffer->GetBufferPointer(), vertices.data(), vertexBufferByteSize);
@@ -127,7 +139,7 @@ private:
 			meshGeo->GpuIndexUploader);
 
 		meshGeo->VertexBufferByteSize = vertexBufferByteSize;
-		meshGeo->VertexByteStride = sizeof(Vertex);
+		meshGeo->VertexByteStride = sizeof(Vertex2);
 
 		meshGeo->IndexBufferByteSize = indexBufferByteSize;
 		meshGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
@@ -137,27 +149,117 @@ private:
 		Submesh.BaseVertexLocation = 0;
 		Submesh.StartIndexLocation = 0;
 
-		meshGeo->Submeshes["cube"] = Submesh;
+		meshGeo->Submeshes["grid"] = Submesh;
 		m_Geometrics[meshGeo->Name] = std::move(meshGeo);
 	}
 
-	void BuildRenderItems() {
-		auto CubeRitem = std::make_unique<RenderItem>();
-		CubeRitem->ObjCBIndex = 0;
-		CubeRitem->World = orangelie::Utility::Tools::Identity();
-		CubeRitem->MeshGeo = m_Geometrics["shapeGeo"].get();
-		CubeRitem->IndexCount = CubeRitem->MeshGeo->Submeshes["cube"].IndexCount;
-		CubeRitem->StartIndexLocation = CubeRitem->MeshGeo->Submeshes["cube"].StartIndexLocation;
-		CubeRitem->BaseVertexLocation = CubeRitem->MeshGeo->Submeshes["cube"].BaseVertexLocation;
-		CubeRitem->PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		CubeRitem->NumFramesDirty = 3;
+	void BuildBoxGeometry() {
+		orangelie::Mesh::GeometryGenerator geoGen;
+		auto boxGeo = geoGen.CreateBox(8.0f, 8.0f, 8.0f, 3);
 
-		m_AllRitems.push_back(std::move(CubeRitem));
+		using orangelie::Mesh::Vertex2;
+		std::vector<Vertex2> vertices(boxGeo.vertices.size());
+
+		for (size_t i = 0; i < boxGeo.vertices.size(); ++i) {
+			vertices[i].Position = boxGeo.vertices[i].Position;
+			vertices[i].Tangent = boxGeo.vertices[i].Tangent;
+			vertices[i].Normal = boxGeo.vertices[i].Normal;
+			vertices[i].TexC = boxGeo.vertices[i].TexC;
+		}
+
+		std::vector<std::uint16_t> indices = boxGeo.GetIndices16();
+
+		const UINT vertexBufferByteSize = (UINT)vertices.size() * sizeof(Vertex2);
+		const UINT indexBufferByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+		auto meshGeo = std::make_unique<orangelie::Mesh::MeshGeometry>();
+		meshGeo->Name = "boxGeo";
+
+		HR(D3DCreateBlob(vertexBufferByteSize, &meshGeo->CpuVertexBuffer));
+		CopyMemory(meshGeo->CpuVertexBuffer->GetBufferPointer(), vertices.data(), vertexBufferByteSize);
+		HR(D3DCreateBlob(indexBufferByteSize, &meshGeo->CpuIndexBuffer));
+		CopyMemory(meshGeo->CpuIndexBuffer->GetBufferPointer(), indices.data(), indexBufferByteSize);
+
+		meshGeo->GpuVertexBuffer = orangelie::Utility::Tools::CreateDefaultBuffer(m_Device, m_CommandList.Get(),
+			vertices.data(), vertexBufferByteSize,
+			meshGeo->GpuVertexUploader);
+		meshGeo->GpuIndexBuffer = orangelie::Utility::Tools::CreateDefaultBuffer(m_Device, m_CommandList.Get(),
+			indices.data(), indexBufferByteSize,
+			meshGeo->GpuIndexUploader);
+
+		meshGeo->VertexBufferByteSize = vertexBufferByteSize;
+		meshGeo->VertexByteStride = sizeof(Vertex2);
+
+		meshGeo->IndexBufferByteSize = indexBufferByteSize;
+		meshGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
+
+		orangelie::Mesh::SubmeshGeometry Submesh;
+		Submesh.IndexCount = (UINT)indices.size();
+		Submesh.BaseVertexLocation = 0;
+		Submesh.StartIndexLocation = 0;
+
+		meshGeo->Submeshes["box"] = Submesh;
+		m_Geometrics[meshGeo->Name] = std::move(meshGeo);
+	}
+
+	void BuildMaterials() {
+		auto white = std::make_unique<orangelie::Lighting::Material>();
+		white->MatTransform = orangelie::Utility::Tools::Identity();
+		white->MatIndex = 0;
+		white->SrvHeapIndex = 0;
+		white->DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
+		white->R0 = { 0.2f, 0.2f, 0.2f };
+		white->Roughness = 0.0f;
+
+		m_Materials["white"] = std::move(white);
+
+		auto stone = std::make_unique<orangelie::Lighting::Material>();
+		stone->MatTransform = orangelie::Utility::Tools::Identity();
+		stone->MatIndex = 1;
+		stone->SrvHeapIndex = 1;
+		stone->DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
+		stone->R0 = { 0.2f, 0.2f, 0.2f };
+		stone->Roughness = 0.0f;
+
+		m_Materials["stone"] = std::move(stone);
+	}
+
+	void BuildRenderItems() {
+		auto GridRitem = std::make_unique<orangelie::Rendering::RenderItem>();
+		GridRitem->ObjCBIndex = 0;
+		GridRitem->World = orangelie::Utility::Tools::Identity();
+		XMStoreFloat4x4(&GridRitem->TexTransform, XMMatrixScaling(5.0f, 5.0f, 1.0f));
+		GridRitem->MeshGeo = m_Geometrics["gridGeo"].get();
+		GridRitem->IndexCount = GridRitem->MeshGeo->Submeshes["grid"].IndexCount;
+		GridRitem->StartIndexLocation = GridRitem->MeshGeo->Submeshes["grid"].StartIndexLocation;
+		GridRitem->BaseVertexLocation = GridRitem->MeshGeo->Submeshes["grid"].BaseVertexLocation;
+		GridRitem->PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		GridRitem->NumFramesDirty = 3;
+		GridRitem->Material = m_Materials["white"].get();
+
+		auto BoxRitem = std::make_unique<orangelie::Rendering::RenderItem>();
+		BoxRitem->ObjCBIndex = 1;
+		BoxRitem->World = orangelie::Utility::Tools::Identity();
+		XMStoreFloat4x4(&BoxRitem->TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
+		BoxRitem->MeshGeo = m_Geometrics["boxGeo"].get();
+		BoxRitem->IndexCount = BoxRitem->MeshGeo->Submeshes["box"].IndexCount;
+		BoxRitem->StartIndexLocation = BoxRitem->MeshGeo->Submeshes["box"].StartIndexLocation;
+		BoxRitem->BaseVertexLocation = BoxRitem->MeshGeo->Submeshes["box"].BaseVertexLocation;
+		BoxRitem->PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		BoxRitem->NumFramesDirty = 3;
+		BoxRitem->Material = m_Materials["stone"].get();
+
+		m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque].push_back(BoxRitem.get());
+		m_AllRitems.push_back(std::move(BoxRitem));
+		
+		m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque].push_back(GridRitem.get());
+		m_AllRitems.push_back(std::move(GridRitem));
 	}
 
 	void BuildFrameResources() {
 		for (size_t i = 0; i < gFrameResourceCount; ++i) {
-			m_FrameResources.push_back(std::make_unique<orangelie::FrameResource>(m_Device, (UINT)m_AllRitems.size(), 1));
+			m_FrameResources.push_back(std::make_unique<orangelie::FrameResource>(
+				m_Device, (UINT)m_AllRitems.size(), 1, (UINT)m_Materials.size()));
 		}
 	}
 
@@ -180,6 +282,7 @@ private:
 		GraphicsPSODesc.SampleDesc.Count = 1;
 		GraphicsPSODesc.SampleDesc.Quality = 0;
 		GraphicsPSODesc.SampleMask = UINT_MAX;
+		GraphicsPSODesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
 
 		auto shaderBin = m_ShaderSys->Resource("sha1");
 
@@ -193,15 +296,18 @@ private:
 		};
 
 		HR(m_Device->CreateGraphicsPipelineState(&GraphicsPSODesc, IID_PPV_ARGS(m_PSOs["opaque"].GetAddressOf())));
+
+		GraphicsPSODesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+		HR(m_Device->CreateGraphicsPipelineState(&GraphicsPSODesc, IID_PPV_ARGS(m_PSOs["opaque_wireframe"].GetAddressOf())));
 	}
 
-	void DrawRenderItems() {
-		auto ObjConst = m_CurrFrameResource->m_ObjConstants->Resource();
+	void DrawRenderItems(std::vector<orangelie::Rendering::RenderItem*> rItems) {
+		auto ObjConst = m_CurrFrameResource->m_ObjCB->Resource();
 		const UINT objSize = orangelie::Utility::Tools::CalcConstantBufferByteSize(sizeof(orangelie::ObjConstants));
 
-		for (auto& r : m_AllRitems) {
+		for (auto& r : rItems) {
 			D3D12_GPU_VIRTUAL_ADDRESS objAddress = ObjConst->GetGPUVirtualAddress() + objSize * r->ObjCBIndex;
-			m_CommandList->SetGraphicsRootConstantBufferView(0, objAddress);
+			m_CommandList->SetGraphicsRootConstantBufferView(2, objAddress);
 
 			m_CommandList->IASetVertexBuffers(0, 1, &orangelie::CppStdUtil::unmove(r->MeshGeo->VertexBufferView()));
 			m_CommandList->IASetIndexBuffer(&orangelie::CppStdUtil::unmove(r->MeshGeo->IndexBufferView()));
@@ -212,14 +318,17 @@ private:
 	}
 
 	void UpdateObjectCBs() {
-		auto objCB = m_CurrFrameResource->m_ObjConstants.get();
+		auto objCB = m_CurrFrameResource->m_ObjCB.get();
 
 		for (auto& e : m_AllRitems) {
 			if (e->NumFramesDirty > 0) {
 				XMMATRIX world = XMLoadFloat4x4(&e->World);
+				XMMATRIX texTransform = XMLoadFloat4x4(&e->TexTransform);
 
 				orangelie::ObjConstants objConstants;
 				XMStoreFloat4x4(&objConstants.gWorld, XMMatrixTranspose(world));
+				XMStoreFloat4x4(&objConstants.gTexTransform, XMMatrixTranspose(texTransform));
+				objConstants.gMatIndex = e->Material->MatIndex;
 
 				objCB->CopyData(e->ObjCBIndex, objConstants);
 
@@ -229,7 +338,7 @@ private:
 	}
 
 	void UpdatePassCBs() {
-		auto passCB = m_CurrFrameResource->m_PassConstants.get();
+		auto passCB = m_CurrFrameResource->m_PassCB.get();
 
 		XMMATRIX P = XMLoadFloat4x4(&orangelie::CppStdUtil::unmove(m_Camera.GetProjectionMatrix()));
 		XMMATRIX V = XMLoadFloat4x4(&orangelie::CppStdUtil::unmove(m_Camera.GetViewMatrix()));
@@ -239,7 +348,39 @@ private:
 		XMStoreFloat4x4(&passConstants.gView, XMMatrixTranspose(V));
 		XMStoreFloat4x4(&passConstants.gViewProj, XMMatrixTranspose(XMMatrixMultiply(V, P)));
 
+		passConstants.gEyePos = m_Camera.GetPosition();
+		passConstants.gAmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+		passConstants.gLights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+		passConstants.gLights[0].Strength = { 0.6f, 0.6f, 0.6f };
+		passConstants.gLights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
+		passConstants.gLights[1].Strength = { 0.3f, 0.3f, 0.3f };
+		passConstants.gLights[2].Direction = { 0.0f, -0.707f, -0.707f };
+		passConstants.gLights[2].Strength = { 0.15f, 0.15f, 0.15f };
+
 		passCB->CopyData(0, passConstants);
+	}
+
+	void UpdateMatVBs() {
+		auto mat = m_CurrFrameResource->m_MatVB.get();
+
+		for (auto& m : m_Materials) {
+			auto r = m.second.get();
+
+			if (r->NumFramesDirty > 0) {
+				XMMATRIX matTrans = XMLoadFloat4x4(&r->MatTransform);
+
+				orangelie::MaterialConstants MatConsts;
+				XMStoreFloat4x4(&MatConsts.gMatTransform, XMMatrixTranspose(matTrans));
+				MatConsts.gDiffuseAlbedo = r->DiffuseAlbedo;
+				MatConsts.R0 = r->R0;
+				MatConsts.Roughness = r->Roughness;
+				MatConsts.SrvHeapIndex = r->SrvHeapIndex;
+
+				mat->CopyData(r->MatIndex, MatConsts);
+
+				--(r->NumFramesDirty);
+			}
+		}
 	}
 
 	void OnKeyboardInput(float dt) {
@@ -255,6 +396,11 @@ private:
 			m_Camera.Strafe(speed * dt);
 
 		m_Camera.UpdateViewMatrix();
+
+		if ((GetAsyncKeyState('1') & 0x8000))
+			m_IsWireframeMode = true;
+		if ((GetAsyncKeyState('2') & 0x8000))
+			m_IsWireframeMode = false;
 	}
 
 protected:
@@ -262,7 +408,7 @@ protected:
 		ZekrosEngine::OnResize();
 
 		// TODO: Something here...
-		m_Camera.SetLens(0.25f * XM_PI, ((float)m_ClientWidth / m_ClientHeight), 1.0f, 1000.0f);
+		m_Camera.SetLens((float)m_ClientWidth, (float)m_ClientHeight, 0.25f * XM_PI, ((float)m_ClientWidth / m_ClientHeight), 1.0f, 1000.0f);
 	}
 
 	virtual void init() {
@@ -271,9 +417,13 @@ protected:
 		HR(m_CommandList->Reset(m_CommandAllocator.Get(), nullptr));
 
 		// TODO: Something here...
+		LoadTextures();
 		BuildRootSignature();
+		BuildDescriptorHeap();
 		BuildShaderSystem();
+		BuildGridGeometry();
 		BuildBoxGeometry();
+		BuildMaterials();
 		BuildRenderItems();
 		BuildFrameResources();
 		BuildPSOs();
@@ -299,11 +449,18 @@ protected:
 
 		UpdateObjectCBs();
 		UpdatePassCBs();
+		UpdateMatVBs();
 	}
 
 	virtual void draw(float dt) override {
 		HR(m_CurrFrameResource->m_CommandAllocator->Reset());
-		HR(m_CommandList->Reset(m_CurrFrameResource->m_CommandAllocator.Get(), m_PSOs["opaque"].Get()));
+
+		if (m_IsWireframeMode) {
+			HR(m_CommandList->Reset(m_CurrFrameResource->m_CommandAllocator.Get(), m_PSOs["opaque_wireframe"].Get()));
+		}
+		else if (!m_IsWireframeMode) {
+			HR(m_CommandList->Reset(m_CurrFrameResource->m_CommandAllocator.Get(), m_PSOs["opaque"].Get()));
+		}
 
 		auto rtvHandle = CurrentBackBufferView();
 		auto dsvHandle = DepthStencilView();
@@ -323,12 +480,21 @@ protected:
 		m_CommandList->RSSetViewports(1, &m_Viewport);
 		m_CommandList->RSSetScissorRects(1, &m_ScissorRect);
 
+		ID3D12DescriptorHeap* descHeaps[] = { m_SrvHeap.Get() };
+		m_CommandList->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
+
 		m_CommandList->SetGraphicsRootSignature(m_RootSignature.Get());
 
-		auto PassConst = m_CurrFrameResource->m_PassConstants->Resource();
-		m_CommandList->SetGraphicsRootConstantBufferView(1, PassConst->GetGPUVirtualAddress());
+		auto PassConst = m_CurrFrameResource->m_PassCB->Resource();
+		m_CommandList->SetGraphicsRootConstantBufferView(3, PassConst->GetGPUVirtualAddress());
 
-		DrawRenderItems();
+		auto MatVB = m_CurrFrameResource->m_MatVB->Resource();
+		m_CommandList->SetGraphicsRootShaderResourceView(1, MatVB->GetGPUVirtualAddress());
+
+		CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(m_SrvHeap->GetGPUDescriptorHandleForHeapStart());
+		m_CommandList->SetGraphicsRootDescriptorTable(0, srvHandle);
+
+		DrawRenderItems(m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque]);
 
 		m_CommandList->ResourceBarrier(1, &unmove(CD3DX12_RESOURCE_BARRIER::Transition(
 			SwapChainResource(),
@@ -344,7 +510,7 @@ protected:
 		// FlushCommandQueue(); 
 
 		m_CurrFrameResource->m_Fence = ++m_CurrentFenceCount;
-		HR(m_CommandQueue->Signal(m_Fence, m_CurrFrameResource->m_Fence));
+		HR(m_CommandQueue->Signal(m_Fence, m_CurrentFenceCount));
 	}
 
 	virtual void MouseDown(WPARAM btnState, int x, int y) override {
@@ -376,16 +542,29 @@ protected:
 	}
 
 private:
+	// RootSignature & Shaders & PSO
 	ComPtr<ID3D12RootSignature> m_RootSignature;
 	std::unique_ptr<orangelie::Shader::ShaderSystem> m_ShaderSys = std::make_unique<orangelie::Shader::ShaderSystem>();
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputElementDesc;
-
-	std::vector<std::unique_ptr<RenderItem>> m_AllRitems;
-	std::unordered_map<std::string, std::unique_ptr<orangelie::Mesh::MeshGeometry>> m_Geometrics;
 	std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> m_PSOs;
+	bool m_IsWireframeMode = false;
 
+	// Rendering & RenderItems
+	std::vector<std::unique_ptr<orangelie::Rendering::RenderItem>> m_AllRitems;
+	std::vector<orangelie::Rendering::RenderItem*> m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Count];
+	std::unordered_map<std::string, std::unique_ptr<orangelie::Mesh::MeshGeometry>> m_Geometrics;
+
+	// Materials & Lighting & Textures
+	std::unordered_map<std::string, std::unique_ptr<orangelie::Lighting::Material>> m_Materials;
+	orangelie::Texture::TextureLoader m_TextureLoader;
+
+	// Win32 Utils
 	POINT m_LastPrevPoint;
 
+	// Camera
 	orangelie::Camera::DefaultCamera m_Camera;
+
+	// Descriptor Heaps
+	ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
 
 };

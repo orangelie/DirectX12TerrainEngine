@@ -21,6 +21,10 @@
 #include "../Shader/ShaderSystem.h"
 #include "../Mesh/MeshTools.h"
 #include "../Camera/DefaultCamera.h"
+#include "../Rendering/RenderSystem.h"
+#include "../Mesh/GeometryGenerator.h"
+#include "../Lighting/LightingUtils.h"
+#include "../Texture/TextureTools.h"
 
 
 namespace orangelie {
@@ -43,6 +47,9 @@ namespace orangelie {
 			void CreateCommandObjects();
 
 		protected:
+			// Static Samplers
+			std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers() const;
+			
 			// Resource View & Resource
 			ID3D12Resource* SwapChainResource() const;
 			D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
@@ -102,6 +109,11 @@ namespace orangelie {
 
 			// hwnd
 			HWND m_hWnd = nullptr;
+
+			// Descriptor Sizes
+			UINT m_RtvSize;
+			UINT m_DsvSize;
+			UINT m_CbvSrvUavSize;
 
 		private:
 			std::unique_ptr<orangelie::Windows::Win32> m_Win32 = nullptr;

@@ -15,14 +15,15 @@
 
 namespace orangelie {
 
-	FrameResource::FrameResource(ID3D12Device* Device, UINT objCount, UINT passCount) {
+	FrameResource::FrameResource(ID3D12Device* Device, UINT objCount, UINT passCount, UINT matCount) {
 		HR(Device->CreateCommandAllocator(
 			D3D12_COMMAND_LIST_TYPE_DIRECT,
 			IID_PPV_ARGS(m_CommandAllocator.GetAddressOf())));
 		m_Fence = 0;
 
-		m_ObjConstants = std::make_unique<orangelie::Gpu::UploadBuffer<ObjConstants>>(Device, objCount, true);
-		m_PassConstants = std::make_unique<orangelie::Gpu::UploadBuffer<PassConstants>>(Device, passCount, true);
+		m_ObjCB = std::make_unique<orangelie::Gpu::UploadBuffer<ObjConstants>>(Device, objCount, true);
+		m_PassCB = std::make_unique<orangelie::Gpu::UploadBuffer<PassConstants>>(Device, passCount, true);
+		m_MatVB = std::make_unique<orangelie::Gpu::UploadBuffer<MaterialConstants>>(Device, matCount, false);
 	}
 
 	FrameResource::~FrameResource() {

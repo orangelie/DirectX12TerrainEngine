@@ -18,20 +18,26 @@ namespace orangelie {
 	namespace Camera {
 
 		DefaultCamera::DefaultCamera() {
-			SetLens(0.25f * XM_PI, 1.0f, 1.0f, 1000.0f);
+			SetLens(920, 860, 0.25f * XM_PI, 1.0f, 1.0f, 1000.0f);
 		}
 
 		DefaultCamera::~DefaultCamera() {
 		}
 
-		void DefaultCamera::SetLens(float fovY, float aspectRatio, float nearZ, float farZ) {
+		void DefaultCamera::SetLens(float width, float height, float fovY, float aspectRatio, float nearZ, float farZ) {
 			m_Aspect = aspectRatio;
 			m_FovY = fovY;
 			m_NearZ = nearZ;
 			m_FarZ = farZ;
 
+			m_NearWindowHeight = m_NearZ * 2.0f * tanf(0.5f * fovY);
+			m_FarWindowHeight = m_FarZ * 2.0f * tanf(0.5f * fovY);
+
 			auto Proj = XMMatrixPerspectiveFovLH(fovY, aspectRatio, nearZ, farZ);
 			XMStoreFloat4x4(&m_Projection, Proj);
+
+			auto Orth = XMMatrixOrthographicLH(width, height, nearZ, farZ);
+			XMStoreFloat4x4(&m_Ortho, Orth);
 		}
 
 		void DefaultCamera::UpdateViewMatrix() {
@@ -96,6 +102,18 @@ namespace orangelie {
 
 		XMFLOAT4X4 DefaultCamera::GetProjectionMatrix() const {
 			return m_Projection;
+		}
+
+		XMFLOAT4X4 DefaultCamera::GetOrthoMatrix() const {
+			return m_Ortho;
+		}
+
+		float DefaultCamera::GetNearZ() const {
+			return m_NearZ;
+		}
+
+		float DefaultCamera::GetFarZ() const {
+			return m_FarZ;
 		}
 
 		void DefaultCamera::SetPosition(float x, float y, float z) {

@@ -1,27 +1,4 @@
-cbuffer cbObjConstants : register(b0)
-{
-	float4x4 gWorld;
-}
-
-cbuffer cbPassConstants : register(b1)
-{
-	float4x4 gProj;
-	float4x4 gView;
-	float4x4 gViewProj;
-}
-
-struct VertexIn
-{
-	float3 PosL		: POSITION;
-	float4 Color	: COLOR;
-};
-
-struct VertexOut
-{
-	float3 PosW		: POSITION;
-	float4 PosH		: SV_POSITION;
-	float4 Color	: COLOR;
-};
+#include "DefaultResource.hlsl"
 
 VertexOut VS(VertexIn vin)
 {
@@ -30,12 +7,34 @@ VertexOut VS(VertexIn vin)
 	float4 posW = mul(float4(vin.PosL, 1.0f), gWorld);
 	vout.PosW = posW.xyz;
 	vout.PosH = mul(posW, gViewProj);
-	vout.Color = vin.Color;
+
+	vout.NormalC = mul(float4(vin.NormalC, 1.0f), gWorld).xyz;
+
+	float4 texTrans = mul(float4(vin.TexC, 0.0f, 1.0f), gTexTransform);
+	vout.TexC = mul(texTrans, gMaterials[gMatIndex].MatTransform).xy;
 
 	return vout;
 }
 
 float4 PS(VertexOut vout) : SV_Target
 {
-	return vout.Color;
+	MaterialBuffer Matr = gMaterials[gMatIndex];
+	float4 DiffuseAlbedo = Matr.DiffuseAlbedo;
+	float3 R0 = Matr.R0;
+	float Shiness = (1.0f - Matr.Roughness);
+
+	DiffuseAlbedo = gTextures[Matr.SrvHeapIndex].Sample(gSamAnisotropicWrap, vout.TexC) * DiffuseAlbedo;
+
+	vout.NormalC = normalize(vout.NormalC);
+	float4 ambient = gAmbientLight * DiffuseAlbedo;
+	float3 toEyeW = normalize(gEyePos - vout.PosW);
+	float3 shadowFactor = 1.0f;
+
+	Material mat = { DiffuseAlbedo, R0, Shiness };
+	float4 directLight = ComputeLighting(gLights, mat, vout.NormalC, toEyeW, vout.PosW, shadowFactor);
+
+	float4 litColor = ambient + directLight;
+	litColor.a = DiffuseAlbedo.a;
+
+	return litColor;
 }

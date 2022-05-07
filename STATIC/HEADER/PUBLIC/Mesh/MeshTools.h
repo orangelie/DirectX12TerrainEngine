@@ -18,6 +18,12 @@
 namespace orangelie {
 
 	namespace Mesh {
+		struct Vertex2 {
+			XMFLOAT3 Position;
+			XMFLOAT3 Tangent;
+			XMFLOAT3 Normal;
+			XMFLOAT2 TexC;
+		};
 
 		namespace MeshColor {
 			const XMFLOAT4 White = { 1.0f, 1.0f, 1.0f, 1.0f };
