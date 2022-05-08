@@ -25,6 +25,7 @@
 #include "../Mesh/GeometryGenerator.h"
 #include "../Lighting/LightingUtils.h"
 #include "../Texture/TextureTools.h"
+#include "../Font/FontEngine.h"
 
 
 namespace orangelie {

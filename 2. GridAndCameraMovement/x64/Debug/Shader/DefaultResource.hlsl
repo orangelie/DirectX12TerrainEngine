@@ -13,7 +13,7 @@ struct MaterialBuffer
 	uint pad3;
 };
 
-Texture2D gTextures[2] : register(t0);
+Texture2D gTextures[1] : register(t0);
 StructuredBuffer<MaterialBuffer> gMaterials : register(t0, space1);
 
 SamplerState gSamPointWrap			: register(s0);

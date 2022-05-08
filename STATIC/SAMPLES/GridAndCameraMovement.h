@@ -17,12 +17,11 @@ class GridAndCameraMovement : public orangelie::Engine::ZekrosEngine {
 private:
 	void LoadTextures() {
 		m_TextureLoader.AddTexture("whiteb", L"./Textures/whiteBlock.dds", m_Device, m_CommandList.Get());
-		m_TextureLoader.AddTexture("stoneb", L"./Textures/StoneBlock.dds", m_Device, m_CommandList.Get());
 	}
 
 	void BuildRootSignature() {
 		CD3DX12_DESCRIPTOR_RANGE srvRange;
-		srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 0, 0);
+		srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
 
 		const size_t parameter_size = 4;
 		CD3DX12_ROOT_PARAMETER rootParameters[parameter_size];
@@ -56,7 +55,7 @@ private:
 
 	void BuildDescriptorHeap() {
 		D3D12_DESCRIPTOR_HEAP_DESC SrvHeapDesc = {};
-		SrvHeapDesc.NumDescriptors = 2;
+		SrvHeapDesc.NumDescriptors = 1;
 		SrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		SrvHeapDesc.NodeMask = 0;
 		SrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
@@ -66,7 +65,7 @@ private:
 		CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
 
 		auto whiteb = m_TextureLoader.GetTexture("whiteb")->GPUHeap;
-		auto stoneb = m_TextureLoader.GetTexture("stoneb")->GPUHeap;
+		// auto stoneb = m_TextureLoader.GetTexture("stoneb")->GPUHeap;
 
 		D3D12_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
 		SrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -78,12 +77,16 @@ private:
 
 		m_Device->CreateShaderResourceView(whiteb.Get(), &SrvDesc, hDescriptor);
 
+		/*
+		* 
 		hDescriptor.Offset(1, m_CbvSrvUavSize);
 
 		SrvDesc.Format = stoneb->GetDesc().Format;
 		SrvDesc.Texture2D.MipLevels = stoneb->GetDesc().MipLevels;
 
 		m_Device->CreateShaderResourceView(stoneb.Get(), &SrvDesc, hDescriptor);
+
+		*/
 	}
 
 	void BuildShaderSystem() {
@@ -213,6 +216,8 @@ private:
 
 		m_Materials["white"] = std::move(white);
 
+		/*
+		* 
 		auto stone = std::make_unique<orangelie::Lighting::Material>();
 		stone->MatTransform = orangelie::Utility::Tools::Identity();
 		stone->MatIndex = 1;
@@ -222,6 +227,8 @@ private:
 		stone->Roughness = 0.0f;
 
 		m_Materials["stone"] = std::move(stone);
+
+		*/
 	}
 
 	void BuildRenderItems() {
@@ -237,6 +244,9 @@ private:
 		GridRitem->NumFramesDirty = 3;
 		GridRitem->Material = m_Materials["white"].get();
 
+
+		/*
+		
 		auto BoxRitem = std::make_unique<orangelie::Rendering::RenderItem>();
 		BoxRitem->ObjCBIndex = 1;
 		BoxRitem->World = orangelie::Utility::Tools::Identity();
@@ -251,6 +261,8 @@ private:
 
 		m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque].push_back(BoxRitem.get());
 		m_AllRitems.push_back(std::move(BoxRitem));
+
+		*/
 		
 		m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque].push_back(GridRitem.get());
 		m_AllRitems.push_back(std::move(GridRitem));
@@ -547,7 +559,7 @@ private:
 	std::unique_ptr<orangelie::Shader::ShaderSystem> m_ShaderSys = std::make_unique<orangelie::Shader::ShaderSystem>();
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputElementDesc;
 	std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> m_PSOs;
-	bool m_IsWireframeMode = false;
+	bool m_IsWireframeMode = true;
 
 	// Rendering & RenderItems
 	std::vector<std::unique_ptr<orangelie::Rendering::RenderItem>> m_AllRitems;

@@ -168,6 +168,9 @@
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Texture\TextureTools.cpp">
       <Filter>소스 파일\PUBLIC\Texture</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Font\FontEngine.cpp">
+      <Filter>소스 파일\PUBLIC\Font</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfaceD3D12.h">
@@ -232,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Texture\TextureTools.h">
       <Filter>헤더 파일\PUBLIC\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Font\FontEngine.h">
+      <Filter>헤더 파일\PUBLIC\Font</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
