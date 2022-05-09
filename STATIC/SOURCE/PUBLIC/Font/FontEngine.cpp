@@ -90,7 +90,7 @@ namespace orangelie {
 			m_MeshGeometry->Submeshes["text"] = submeshGeo;
 
 			// update sentence
-			m_Floader.Initialize(Device, CmdList, "./Font/fontdata.txt", L"./Textures/BMFont.dds");
+			m_Floader.Initialize(Device, CmdList, "./Font/fontdata.txt", L"./Textures/font.dds");
 			UpdateSentence(Device, CmdList, red, green, blue, text, positionX, positionY, m_Sentence_1.get());
 		}
 

@@ -16,7 +16,7 @@
 class GridAndCameraMovement : public orangelie::Engine::ZekrosEngine {
 private:
 	void LoadTextures() {
-		m_TextureLoader.AddTexture("whiteb", L"./Textures/WhiteBlock.dds", m_Device, m_CommandList.Get());
+		m_TextureLoader.AddTexture("whiteb", L"./Textures/StoneBlock.dds", m_Device, m_CommandList.Get());
 	}
 
 	void BuildRootSignature() {
@@ -339,6 +339,28 @@ private:
 		}
 	}
 
+	void AnimateMaterialBuffer(float dt) {
+		auto mat = m_Materials["white"].get();
+
+		float u = mat->MatTransform(3, 0);
+		float v = mat->MatTransform(3, 1);
+
+		u += 0.1f * dt;
+		v += 0.02f * dt;
+
+		if (u >= 1.0f) {
+			u -= 1.0f;
+		}
+		if (v >= 1.0f) {
+			v -= 1.0f;
+		}
+
+		mat->MatTransform(3, 0) = u;
+		mat->MatTransform(3, 1) = v;
+
+		mat->NumFramesDirty = gNumFramesDirty;
+	}
+
 	void UpdateObjectCBs() {
 		auto objCB = m_CurrFrameResource->m_ObjCB.get();
 
@@ -445,7 +467,7 @@ protected:
 		BuildShaderSystem();
 		BuildGridGeometry();
 		BuildBoxGeometry();
-		//BuildFontEngine();
+		BuildFontEngine();
 		BuildMaterials();
 		BuildRenderItems();
 		BuildFrameResources();
@@ -470,6 +492,7 @@ protected:
 			CloseHandle(hEvent);
 		}
 
+		AnimateMaterialBuffer(dt);
 		UpdateObjectCBs();
 		UpdatePassCBs();
 		UpdateMatVBs();
