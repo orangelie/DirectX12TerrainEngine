@@ -16,6 +16,7 @@
 #include "HEADER/PUBLIC/Utility/DxgiUtil.h"
 #include "HEADER/PUBLIC/Gpu/UploadBuffer.h"
 #include "HEADER/PUBLIC/Lighting/LightingUtils.h"
+#include "HEADER/PUBLIC/Mesh/MeshTools.h"
 
 namespace orangelie {
 
@@ -52,7 +53,7 @@ namespace orangelie {
 
 	class FrameResource {
 	public:
-		FrameResource(ID3D12Device* Device, UINT objCount, UINT passCount, UINT matCount);
+		FrameResource(ID3D12Device* Device, UINT objCount, UINT passCount, UINT matCount, UINT textCount);
 		FrameResource(const FrameResource&) = delete;
 		FrameResource& operator=(const FrameResource&) = delete;
 		~FrameResource();
@@ -63,6 +64,7 @@ namespace orangelie {
 		std::unique_ptr<orangelie::Gpu::UploadBuffer<ObjConstants>> m_ObjCB = nullptr;
 		std::unique_ptr<orangelie::Gpu::UploadBuffer<PassConstants>> m_PassCB = nullptr;
 		std::unique_ptr<orangelie::Gpu::UploadBuffer<MaterialConstants>> m_MatVB = nullptr;
+		std::unique_ptr<orangelie::Gpu::UploadBuffer<std::vector<orangelie::Mesh::Vertex2>>> m_FontVB = nullptr;
 
 	};
 }

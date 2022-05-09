@@ -16,7 +16,7 @@
 class GridAndCameraMovement : public orangelie::Engine::ZekrosEngine {
 private:
 	void LoadTextures() {
-		m_TextureLoader.AddTexture("whiteb", L"./Textures/whiteBlock.dds", m_Device, m_CommandList.Get());
+		m_TextureLoader.AddTexture("whiteb", L"./Textures/WhiteBlock.dds", m_Device, m_CommandList.Get());
 	}
 
 	void BuildRootSignature() {
@@ -205,6 +205,16 @@ private:
 		m_Geometrics[meshGeo->Name] = std::move(meshGeo);
 	}
 
+	void BuildFontEngine() {
+		const UINT maxLength = 16;
+		XMMATRIX viewMatrix = XMLoadFloat4x4(&orangelie::CppStdUtil::unmove(m_Camera.GetViewMatrix()));
+
+		m_FontEngine.Initialize(
+			m_Device, m_CommandList.Get(), maxLength, m_ClientWidth, m_ClientHeight,
+			viewMatrix, 1.0f, 1.0f, 1.0f, 0, "Hello World", 100, 100);
+
+	}
+
 	void BuildMaterials() {
 		auto white = std::make_unique<orangelie::Lighting::Material>();
 		white->MatTransform = orangelie::Utility::Tools::Identity();
@@ -271,7 +281,7 @@ private:
 	void BuildFrameResources() {
 		for (size_t i = 0; i < gFrameResourceCount; ++i) {
 			m_FrameResources.push_back(std::make_unique<orangelie::FrameResource>(
-				m_Device, (UINT)m_AllRitems.size(), 1, (UINT)m_Materials.size()));
+				m_Device, (UINT)m_AllRitems.size(), 1, (UINT)m_Materials.size(), 1));
 		}
 	}
 
@@ -435,6 +445,7 @@ protected:
 		BuildShaderSystem();
 		BuildGridGeometry();
 		BuildBoxGeometry();
+		//BuildFontEngine();
 		BuildMaterials();
 		BuildRenderItems();
 		BuildFrameResources();
@@ -578,5 +589,8 @@ private:
 
 	// Descriptor Heaps
 	ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
+
+	// Font Engine
+	orangelie::Font::FontEngine m_FontEngine;
 
 };

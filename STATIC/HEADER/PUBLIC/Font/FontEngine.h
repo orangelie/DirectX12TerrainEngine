@@ -16,14 +16,20 @@
 #include "../Utility/DxgiUtil.h"
 #include "../Texture/TextureTools.h"
 #include "../Mesh/MeshTools.h"
+#include "../Rendering/RenderSystem.h"
+#include "../FrameResources.h"
+#include "FontLoader.h"
 
 namespace orangelie {
 
 	namespace Font {
 
-		struct FontData {
-			float left, right;
-			UINT size;
+		struct SentenceType {
+			std::vector<orangelie::Mesh::Vertex2> vertices;
+			UINT indexSize;
+
+			UINT maxLength, vertexID, vertexCount, indexCount;
+			float red, blue, green;
 		};
 
 		class FontEngine {
@@ -33,24 +39,46 @@ namespace orangelie {
 			FontEngine& operator=(const FontEngine&) = delete;
 			~FontEngine();
 
-			void Initialize(ID3D12Device* Device,
+			void Initialize(
+				ID3D12Device* Device,
 				ID3D12GraphicsCommandList* CmdList,
-				const char* fontFilename,
-				const wchar_t* textureFilename);
+				UINT maxLength,
+				UINT screenWidth,
+				UINT screenHeight,
+				XMMATRIX viewMatrix,
+				float red, float green, float blue,
+				UINT heapID,
+				const char* text,
+				int positionX,
+				int positionY);
 
-			void BuildVertexIndexArray(
-				std::vector<orangelie::Mesh::Vertex2>& vertices,
-				std::vector<std::uint32_t>& indices,
-				const char* sentence,
-				float drawX,
-				float drawY);
+			void UpdateSentence(
+				ID3D12Device* Device,
+				ID3D12GraphicsCommandList* CmdList,
+				float red, float green, float blue,
+				const char* text,
+				int positionX,
+				int positionY,
+				SentenceType* sentence);
+
+			void RenderSentence(
+				ID3D12Device* Device,
+				ID3D12GraphicsCommandList* CmdList,
+				std::vector<orangelie::Rendering::RenderItem*> Ritems,
+				orangelie::FrameResource* CurrframeResource,
+				SentenceType* sentence);
+
+			SentenceType* GetSentence() const;
 
 		private:
 
 
 		private:
-			orangelie::Texture::TextureLoader m_TextureLoader;
-			std::vector<FontData> m_Font;
+			std::unique_ptr<SentenceType> m_Sentence_1;
+			XMFLOAT4X4 m_ViewMatrix;
+			UINT m_ScreenWidth, m_ScreenHeight;
+			std::unique_ptr<orangelie::Mesh::MeshGeometry> m_MeshGeometry;
+			orangelie::Font::FontLoader m_Floader;
 
 		};
 	}

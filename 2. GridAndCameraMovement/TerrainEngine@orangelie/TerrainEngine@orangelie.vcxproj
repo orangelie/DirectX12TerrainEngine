@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\DxInterface\InterfeceDxgi.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Engine\ZekrosEngine.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Font\FontEngine.cpp" />
+    <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Font\FontLoader.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Lighting\LightingUtils.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Mesh\GeometryGenerator.cpp" />
     <ClCompile Include="..\..\STATIC\SOURCE\PUBLIC\Mesh\MeshTools.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\DxInterface\InterfeceDxgi.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Engine\ZekrosEngine.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Font\FontEngine.h" />
+    <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Font\FontLoader.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Gpu\UploadBuffer.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Lighting\LightingUtils.h" />
     <ClInclude Include="..\..\STATIC\HEADER\PUBLIC\Mesh\GeometryGenerator.h" />

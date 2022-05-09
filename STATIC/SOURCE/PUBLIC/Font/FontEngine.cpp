@@ -23,100 +23,131 @@ namespace orangelie {
 		FontEngine::~FontEngine() {
 		}
 
-		void FontEngine::Initialize(ID3D12Device* Device,
+		void FontEngine::Initialize(
+			ID3D12Device* Device,
 			ID3D12GraphicsCommandList* CmdList,
-			const char* fontFilename,
-			const wchar_t* textureFilename) {
+			UINT maxLength,
+			UINT screenWidth,
+			UINT screenHeight,
+			XMMATRIX viewMatrix,
+			float red, float green, float blue,
+			UINT heapID,
+			const char* text,
+			int positionX,
+			int positionY) {
 
-			// create a texture.
-			m_TextureLoader.AddTexture("font", textureFilename, Device, CmdList);
+			// value Initializing
+			XMStoreFloat4x4(&m_ViewMatrix, viewMatrix);
+			m_ScreenWidth = screenWidth;
+			m_ScreenHeight = screenHeight;
 
-			// load font data file.
-			m_Font.resize(95);
+			// pointer Initializing
+			m_Sentence_1 = std::make_unique<SentenceType>();
 
-			std::ifstream ifs(fontFilename);
-			char temp;
+			m_Sentence_1->maxLength = maxLength;
 
-			if (ifs.fail())
-				HR(-1);
+			m_Sentence_1->red = red;
+			m_Sentence_1->green = green;
+			m_Sentence_1->blue = blue;
 
-			for (UINT i = 0; i < 95; ++i) {
-				ifs.get(temp); while (temp != ' ') { ifs.get(temp); }
-				ifs.get(temp); while (temp != ' ') { ifs.get(temp); }
+			m_Sentence_1->vertexCount = maxLength * 4;
+			m_Sentence_1->indexCount = maxLength * 6;
 
-				ifs >> m_Font[i].left;
-				ifs >> m_Font[i].right;
-				ifs >> m_Font[i].size;
-			}
+			m_Sentence_1->vertexID = heapID;
 
-			ifs.close();
+			// build heap memory
+			std::vector<orangelie::Mesh::Vertex2> vertices;
+			vertices.resize(m_Sentence_1->vertexCount);
+
+			std::vector<std::uint32_t> indices;
+			indices.resize(m_Sentence_1->indexCount);
+
+			m_MeshGeometry = std::make_unique<orangelie::Mesh::MeshGeometry>();
+			m_MeshGeometry->Name = "textGeo";
+
+			const UINT vBytes = sizeof(orangelie::Mesh::Vertex2) * (UINT)vertices.size();
+			const UINT iBytes = sizeof(std::uint32_t) * (UINT)indices.size();
+
+			m_MeshGeometry->GpuVertexBuffer = orangelie::Utility::Tools::CreateDefaultBuffer(Device, CmdList,
+				vertices.data(), vBytes, m_MeshGeometry->GpuVertexUploader);
+			m_MeshGeometry->GpuIndexBuffer = orangelie::Utility::Tools::CreateDefaultBuffer(Device, CmdList,
+				indices.data(), iBytes, m_MeshGeometry->GpuIndexUploader);
+			HR(D3DCreateBlob(vBytes, m_MeshGeometry->CpuVertexBuffer.GetAddressOf()));
+			CopyMemory(m_MeshGeometry->CpuVertexBuffer->GetBufferPointer(), vertices.data(), vBytes);
+			HR(D3DCreateBlob(iBytes, m_MeshGeometry->CpuIndexBuffer.GetAddressOf()));
+			CopyMemory(m_MeshGeometry->CpuIndexBuffer->GetBufferPointer(), indices.data(), iBytes);
+
+			m_MeshGeometry->IndexBufferByteSize = iBytes;
+			m_MeshGeometry->IndexFormat = DXGI_FORMAT_R32_UINT;
+			m_MeshGeometry->VertexBufferByteSize = vBytes;
+			m_MeshGeometry->VertexByteStride = sizeof(orangelie::Mesh::Vertex2);
+
+			orangelie::Mesh::SubmeshGeometry submeshGeo;
+			submeshGeo.IndexCount = (UINT)indices.size();
+			submeshGeo.BaseVertexLocation = 0;
+			submeshGeo.StartIndexLocation = 0;
+
+			m_MeshGeometry->Submeshes["text"] = submeshGeo;
+
+			// update sentence
+			m_Floader.Initialize(Device, CmdList, "./Font/fontdata.txt", L"./Textures/BMFont.dds");
+			UpdateSentence(Device, CmdList, red, green, blue, text, positionX, positionY, m_Sentence_1.get());
 		}
 
-		void FontEngine::BuildVertexIndexArray(
-			std::vector<orangelie::Mesh::Vertex2>& vertices,
-			std::vector<std::uint32_t>& indices,
-			const char* sentence,
-			float drawX,
-			float drawY) {
+		void FontEngine::UpdateSentence(
+			ID3D12Device* Device,
+			ID3D12GraphicsCommandList* CmdList,
+			float red, float green, float blue,
+			const char* text,
+			int positionX,
+			int positionY,
+			SentenceType* sentence) {
 
-			/*
-			* 
-			* sentenceLength: 표시할 글자의 수
-			* letter: 표시될 글자
-			* vindex: 정점버퍼 인덱싱 누적
-			* iindex: 인덱스버퍼 인덱싱 누적
-			* sentenceHeight: 한글자의 세로길이
-			* 
-			*/
+			UINT numLetters = (UINT)strlen(text);
+			if (sentence->maxLength < numLetters)
+				HR(-1);
 
-			const int sentenceHeight = 16;
-			int sentenceLength = (int)strlen(sentence);
-			int vindex = 0, iindex = 0;
+			std::vector<orangelie::Mesh::Vertex2> vertices;
+			vertices.resize((size_t)(numLetters * 4));
+			memset(vertices.data(), 0x00, vertices.size() * sizeof(orangelie::Mesh::Vertex2));
 
-			for (int i = 0; i < sentenceLength; ++i) {
-				int letter = ((int)sentence[i]) - 32; // <== 32는 글꼴텍스트파일에서 이미 정해진숫자입니다. 따라서 반드시 32를 빼야합니다.
+			std::vector<std::uint32_t> indices;
+			indices.resize((size_t)(numLetters * 6));
+			memset(indices.data(), 0x00, indices.size() * sizeof(std::uint32_t));
 
-				// 만약 letter가 ' '라면 다음으로 그려질 글자의 x좌표 3.0만큼 증가
-				if (letter == 0) {
-					drawX += 3.0f;
-				}
+			float drawX = (float)(((m_ScreenWidth / 2) * -1) + positionX);
+			float drawY = (float)((m_ScreenHeight / 2) - positionY);
 
-				else {
-					XMFLOAT3 v1 = XMFLOAT3(drawX, drawY, 0.0f);	// top left (0)
-					XMFLOAT3 v2 = XMFLOAT3(drawX + m_Font[letter].size, drawY, 0.0f);	// top right (1)
-					XMFLOAT3 v3 = XMFLOAT3(drawX, drawY - sentenceHeight, 0.0f); // bottom left (2)
-					XMFLOAT3 v4 = XMFLOAT3(drawX + m_Font[letter].size, drawY - sentenceHeight, 0.0f); //bottom right (3)
+			m_Floader.BuildVertexIndexArray(vertices, indices, text, drawX, drawY);
 
-					XMFLOAT2 TexC_TopLeft = XMFLOAT2(m_Font[letter].left, 0.0f);
-					XMFLOAT2 TexC_TopRight = XMFLOAT2(m_Font[letter].right, 0.0f);
-					XMFLOAT2 TexC_BottomLeft = XMFLOAT2(m_Font[letter].left, 1.0f);
-					XMFLOAT2 TexC_BottomRight = XMFLOAT2(m_Font[letter].right, 1.0f);
+			sentence->vertices = vertices;
+			sentence->indexCount = (UINT)indices.size();
+		}
 
-					std::uint32_t i1 = 0;
-					std::uint32_t i2 = 1;
-					std::uint32_t i3 = 2;
-					std::uint32_t i4 = 1;
-					std::uint32_t i5 = 2;
-					std::uint32_t i6 = 3;
+		void FontEngine::RenderSentence(
+			ID3D12Device* Device,
+			ID3D12GraphicsCommandList* CmdList,
+			std::vector<orangelie::Rendering::RenderItem*> Ritems,
+			orangelie::FrameResource* CurrframeResource,
+			SentenceType* sentence) {
 
+			auto fontvb = CurrframeResource->m_FontVB.get();
+			fontvb->CopyData(sentence->vertexID, sentence->vertices);
 
-					vertices[vindex + 0].Position = v1;
-					vertices[vindex + 1].Position = v2;
-					vertices[vindex + 2].Position = v3;
-					vertices[vindex + 3].Position = v4;
-					vindex += 4;
+			for (auto& r : Ritems) {
+				r->MeshGeo->GpuVertexBuffer = fontvb->Resource();
 
-					indices[iindex + 0] = i1;
-					indices[iindex + 1] = i2;
-					indices[iindex + 2] = i3;
-					indices[iindex + 3] = i4;
-					indices[iindex + 2] = i5;
-					indices[iindex + 3] = i6;
-					iindex += 6;
+				CmdList->IASetVertexBuffers(0, 1, &orangelie::CppStdUtil::unmove(r->MeshGeo->VertexBufferView()));
+				CmdList->IASetIndexBuffer(&orangelie::CppStdUtil::unmove(r->MeshGeo->IndexBufferView()));
+				CmdList->IASetPrimitiveTopology(r->PrimitiveTopology);
 
-					drawX = drawX + m_Font[letter].size + 1.0f;
-				}
+				CmdList->DrawIndexedInstanced(r->IndexCount, 1,
+					r->StartIndexLocation, r->BaseVertexLocation, 0);
 			}
+		}
+
+		SentenceType* FontEngine::GetSentence() const {
+			return m_Sentence_1.get();
 		}
 	}
 }
