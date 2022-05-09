@@ -3,7 +3,7 @@
 😀 Hello, everyone.     
 🕹️ This is **A Terrain Engine** for practice using   **DirectX12**.🕹️    
 
-⭐ For terrain engine study, I referred to the   DirectX11 based Rastertek lecture, but I edited a lot   of the actual source code.⭐  
+⭐ For terrain engine study, I referred to the   DirectX11 based Rastertek tutorial, but I edited a lot   of the actual source code.⭐  
 
 
 ## ❌ Warning ❌
