@@ -48,8 +48,8 @@ namespace orangelie {
 			void Strafe(float d);
 			void Walk(float d);
 
-			void Pitch(float d);
-			void RotateY(float d);
+			void Pitch(float d, float dt);
+			void RotateY(float d, float dt);
 
 		private:
 			XMFLOAT3 m_Position = { 0.0f, 0.0f, 0.0f };

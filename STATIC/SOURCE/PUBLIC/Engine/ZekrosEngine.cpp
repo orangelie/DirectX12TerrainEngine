@@ -156,7 +156,7 @@ namespace orangelie {
 				return 0;
 
 			case WM_MOUSEMOVE:
-				MouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				MouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), m_GameTimer.DeltaTime());
 				return 0;
 
 			case WM_RBUTTONDOWN:

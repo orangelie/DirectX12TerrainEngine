@@ -26,6 +26,7 @@
 #include "../Lighting/LightingUtils.h"
 #include "../Texture/TextureTools.h"
 #include "../Font/FontEngine.h"
+#include "../Terrain/HeightMapTerrain.h"
 
 
 namespace orangelie {
@@ -72,7 +73,7 @@ namespace orangelie {
 			// Mouse Controller
 			virtual void MouseDown(WPARAM btnState, int x, int y) = 0;
 			virtual void MouseUp(WPARAM btnState, int x, int y) = 0;
-			virtual void MouseMove(WPARAM btnState, int x, int y) = 0;
+			virtual void MouseMove(WPARAM btnState, int x, int y, float dt) = 0;
 
 			// Client ScreenSize
 			int m_ClientWidth;

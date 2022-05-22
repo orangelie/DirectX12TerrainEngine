@@ -118,7 +118,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Users\parksangwo\Desktop\Github\DirectX12TerrainEngine\STATIC\HEADER\PRIVATE\DxInterface;C:\Users\parksangwo\Desktop\Github\DirectX12TerrainEngine\2. GridAndCameraMovement\TerrainEngine%40orangelie;C:\Users\parksangwo\Desktop\Github\DirectX12TerrainEngine\STATIC;$(DXSDK_DIR)Include;%(WindowsSDK_LibraryPath_x64);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\parksangwo\Desktop\Github\DirectX12TerrainEngine\STATIC\HEADER\PRIVATE\DxInterface;C:\Users\parksangwo\Desktop\Github\DirectX12TerrainEngine\2. GridAndCameraMovement\TerrainEngine@orangelie;C:\Users\parksangwo\Desktop\Github\DirectX12TerrainEngine\STATIC;$(DXSDK_DIR)Include;%(WindowsSDK_LibraryPath_x64);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

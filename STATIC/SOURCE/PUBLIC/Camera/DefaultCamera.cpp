@@ -141,7 +141,7 @@ namespace orangelie {
 			m_ViewDirty = true;
 		}
 
-		void DefaultCamera::Pitch(float d) {
+		void DefaultCamera::Pitch(float d, float dt) {
 			XMVECTOR R = XMLoadFloat3(&m_Right);
 			XMVECTOR U = XMLoadFloat3(&m_Up);
 			XMVECTOR L = XMLoadFloat3(&m_Look);
@@ -154,7 +154,7 @@ namespace orangelie {
 			m_ViewDirty = true;
 		}
 
-		void DefaultCamera::RotateY(float d) {
+		void DefaultCamera::RotateY(float d, float dt) {
 			XMVECTOR R = XMLoadFloat3(&m_Right);
 			XMVECTOR U = XMLoadFloat3(&m_Up);
 			XMVECTOR L = XMLoadFloat3(&m_Look);

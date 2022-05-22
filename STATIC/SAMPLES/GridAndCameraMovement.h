@@ -492,7 +492,7 @@ protected:
 			CloseHandle(hEvent);
 		}
 
-		AnimateMaterialBuffer(dt);
+		//AnimateMaterialBuffer(dt);
 		UpdateObjectCBs();
 		UpdatePassCBs();
 		UpdateMatVBs();
@@ -570,7 +570,7 @@ protected:
 		ReleaseCapture();
 	}
 
-	virtual void MouseMove(WPARAM btnState, int x, int y) override {
+	virtual void MouseMove(WPARAM btnState, int x, int y, float dt) override {
 		if ((btnState & MK_RBUTTON) != 0) {
 
 		}
@@ -579,8 +579,8 @@ protected:
 			float dx = XMConvertToRadians(0.25f * (static_cast<float>(x - m_LastPrevPoint.x)));
 			float dy = XMConvertToRadians(0.25f * (static_cast<float>(y - m_LastPrevPoint.y)));
 
-			m_Camera.Pitch(dy);
-			m_Camera.RotateY(dx);
+			m_Camera.Pitch(dy, dt);
+			m_Camera.RotateY(dx, dt);
 		}
 
 		m_LastPrevPoint.x = x;
