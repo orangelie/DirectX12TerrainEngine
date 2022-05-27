@@ -425,6 +425,8 @@ private:
 	}
 
 	void BuildRenderItems() {
+		/*
+		* 
 		auto GridRitem = std::make_unique<orangelie::Rendering::RenderItem>();
 		GridRitem->ObjCBIndex = 0;
 		GridRitem->World = orangelie::Utility::Tools::Identity();
@@ -437,9 +439,14 @@ private:
 		GridRitem->NumFramesDirty = 3;
 		GridRitem->Material = m_Materials["white"].get();
 
+		m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque].push_back(GridRitem.get());
+		m_AllRitems.push_back(std::move(GridRitem));
+
+		*/
+
 
 		auto EnvSphereRitem = std::make_unique<orangelie::Rendering::RenderItem>();
-		EnvSphereRitem->ObjCBIndex = 1;
+		EnvSphereRitem->ObjCBIndex = 0;
 		XMStoreFloat4x4(&EnvSphereRitem->World, XMMatrixScaling(5000.0f, 5000.0f, 5000.0f));
 		EnvSphereRitem->TexTransform = orangelie::Utility::Tools::Identity();
 		EnvSphereRitem->MeshGeo = m_Geometrics["sphereGeo"].get();
@@ -453,8 +460,6 @@ private:
 		m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Sky].push_back(EnvSphereRitem.get());
 		m_AllRitems.push_back(std::move(EnvSphereRitem));
 
-		m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque].push_back(GridRitem.get());
-		m_AllRitems.push_back(std::move(GridRitem));
 
 		for (size_t i = 0; i < m_CreativeRitems.size(); ++i) {
 			m_RitemsLayer[(int)orangelie::Rendering::RenderLayer::Opaque].push_back(m_CreativeRitems[i].get());
@@ -838,7 +843,7 @@ private:
 	// Dynamic Update Objects
 	std::vector<std::unique_ptr<orangelie::Rendering::RenderItem>> m_CreativeRitems;
 	std::vector<GeometryOpt*> m_DUpdateObjs;
-	UINT m_ID = 2;
+	UINT m_ID = 1;
 	float m_CameraSpeed = 5.0f;
 
 };
