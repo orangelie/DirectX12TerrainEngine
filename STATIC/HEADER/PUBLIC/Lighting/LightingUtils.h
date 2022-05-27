@@ -36,6 +36,8 @@ namespace orangelie {
 
 			UINT MatIndex;
 			UINT SrvHeapIndex;
+			UINT SelectedColor;
+			XMFLOAT4 Color;
 
 			int NumFramesDirty = gNumFramesDirty;
 		};

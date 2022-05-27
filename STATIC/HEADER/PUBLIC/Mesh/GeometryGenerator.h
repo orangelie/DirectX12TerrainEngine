@@ -71,7 +71,7 @@ namespace orangelie {
 			void Subdivide(MeshData& meshData);
 			GeometryGenerator::MeshData CreateBox(float width, float height, float depth, uint32 numSubdivisions);
 			static MeshData CreateGrid(float width, float depth, uint32 m, uint32 n);
-			//static MeshData CreateSphere(float radius, uint32 sliceCount, uint32 stackCount);
+			static MeshData CreateSphere(float radius, uint32 sliceCount, uint32 stackCount);
 
 		private:
 

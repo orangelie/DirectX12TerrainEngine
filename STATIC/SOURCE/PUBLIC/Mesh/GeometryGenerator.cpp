@@ -211,6 +211,7 @@ namespace orangelie {
 
 		GeometryGenerator::~GeometryGenerator() {
 		}
+
 		GeometryGenerator::MeshData GeometryGenerator::CreateGrid(float width, float depth, uint32 m, uint32 n) {
 			const uint32 faceCount = 2 * (m - 1) * (n - 1);
 			const uint32 vertexCount = m * n;
@@ -260,6 +261,101 @@ namespace orangelie {
 			}
 
 			return mesh;
+		}
+
+		GeometryGenerator::MeshData GeometryGenerator::CreateSphere(float radius, uint32 sliceCount, uint32 stackCount)
+		{
+			GeometryGenerator::MeshData meshData;
+
+			//
+			// Compute the vertices stating at the top pole and moving down the stacks.
+			//
+
+			// Poles: note that there will be texture coordinate distortion as there is
+			// not a unique point on the texture map to assign to the pole when mapping
+			// a rectangular texture onto a sphere.
+			Vertex topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+			Vertex bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+
+			meshData.vertices.push_back(topVertex);
+
+			float phiStep = XM_PI / stackCount;
+			float thetaStep = 2.0f * XM_PI / sliceCount;
+
+			// Compute vertices for each stack ring (do not count the poles as rings).
+			for (uint32 i = 1; i <= stackCount - 1; ++i)
+			{
+				float phi = i * phiStep;
+
+				// Vertices of ring.
+				for (uint32 j = 0; j <= sliceCount; ++j)
+				{
+					float theta = j * thetaStep;
+
+					Vertex v;
+
+					// spherical to cartesian
+					v.Position.x = radius * sinf(phi) * cosf(theta);
+					v.Position.y = radius * cosf(phi);
+					v.Position.z = radius * sinf(phi) * sinf(theta);
+
+					// Partial derivative of P with respect to theta
+					v.Tangent.x = -radius * sinf(phi) * sinf(theta);
+					v.Tangent.y = 0.0f;
+					v.Tangent.z = +radius * sinf(phi) * cosf(theta);
+
+					XMVECTOR T = XMLoadFloat3(&v.Tangent);
+					XMStoreFloat3(&v.Tangent, XMVector3Normalize(T));
+
+					XMVECTOR p = XMLoadFloat3(&v.Position);
+					XMStoreFloat3(&v.Normal, XMVector3Normalize(p));
+
+					v.TexC.x = theta / XM_2PI;
+					v.TexC.y = phi / XM_PI;
+
+					meshData.vertices.push_back(v);
+				}
+			}
+
+			meshData.vertices.push_back(bottomVertex);
+
+			for (uint32 i = 1; i <= sliceCount; ++i)
+			{
+				meshData.indices.push_back(0);
+				meshData.indices.push_back(i + 1);
+				meshData.indices.push_back(i);
+			}
+
+
+			uint32 baseIndex = 1;
+			uint32 ringVertexCount = sliceCount + 1;
+			for (uint32 i = 0; i < stackCount - 2; ++i)
+			{
+				for (uint32 j = 0; j < sliceCount; ++j)
+				{
+					meshData.indices.push_back(baseIndex + i * ringVertexCount + j);
+					meshData.indices.push_back(baseIndex + i * ringVertexCount + j + 1);
+					meshData.indices.push_back(baseIndex + (i + 1) * ringVertexCount + j);
+
+					meshData.indices.push_back(baseIndex + (i + 1) * ringVertexCount + j);
+					meshData.indices.push_back(baseIndex + i * ringVertexCount + j + 1);
+					meshData.indices.push_back(baseIndex + (i + 1) * ringVertexCount + j + 1);
+				}
+			}
+
+
+			uint32 southPoleIndex = (uint32)meshData.vertices.size() - 1;
+
+			baseIndex = southPoleIndex - ringVertexCount;
+
+			for (uint32 i = 0; i < sliceCount; ++i)
+			{
+				meshData.indices.push_back(southPoleIndex);
+				meshData.indices.push_back(baseIndex + i);
+				meshData.indices.push_back(baseIndex + i + 1);
+			}
+
+			return meshData;
 		}
 	}
 }
