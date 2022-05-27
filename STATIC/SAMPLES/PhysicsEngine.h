@@ -47,13 +47,17 @@ struct SphereOpt {
 };
 
 struct Sphere : public GeometryOpt {
+private:
 	UINT ID;
+	float radius;
 
 public:
 	Sphere() {}
 	Sphere(UINT id) : ID(id) {}
 	virtual void SetPosition(float x, float y, float z) override { this->x = x; this->y = y; this->z = z; }
 	virtual Coord GetPosition() override { return { x, y, z }; }
+	void SetRadius(float sx, float sy, float sz) { radius = 1.0f * max(sx, max(sy, sz)); }
+	float GetRadius() { return radius; }
 	virtual UINT GetID() override { return ID; }
 };
 
@@ -76,7 +80,9 @@ struct BoxOpt {
 };
 
 struct Box : public GeometryOpt {
+private:
 	UINT ID;
+	float length, height, width;
 
 public:
 	Box() {}
@@ -84,6 +90,13 @@ public:
 	void SetPosition(float x, float y, float z) { this->x = x; this->y = y; this->z = z; }
 	Coord GetPosition() { return { x, y, z }; }
 	UINT GetID() { return ID; }
+
+	void SetSize(float sx, float sy, float sz) {
+		length = 1.0f * sx;
+		height = 1.0f * sy;
+		width = 1.0f * sz;
+	}
+	Coord GetSize() { return { length, height, width }; }
 };
 
 class PhysicsEngine : public orangelie::Engine::ZekrosEngine {
@@ -95,6 +108,7 @@ protected:
 	std::unique_ptr<Sphere> sphere(SphereOpt sphereOpt) {
 		auto sph = std::make_unique<Sphere>(m_ID);
 		sph->SetPosition(sphereOpt.x, sphereOpt.y, sphereOpt.z);
+		sph->SetRadius(sphereOpt.scale_x, sphereOpt.scale_y, sphereOpt.scale_z);
 
 		auto EnvSphereRitem = std::make_unique<orangelie::Rendering::RenderItem>();
 		EnvSphereRitem->ObjCBIndex = m_ID++;
@@ -117,6 +131,7 @@ protected:
 	std::unique_ptr<Box> box(BoxOpt boxOpt) {
 		auto bx = std::make_unique<Box>(m_ID);
 		bx->SetPosition(boxOpt.x, boxOpt.y, boxOpt.z);
+		bx->SetSize(boxOpt.scale_x, boxOpt.scale_y, boxOpt.scale_z);
 
 		auto BoxRitem = std::make_unique<orangelie::Rendering::RenderItem>();
 		BoxRitem->ObjCBIndex = m_ID++;
@@ -139,7 +154,7 @@ protected:
 private:
 	void LoadTextures() {
 		m_TextureLoader.AddTexture("whiteb", L"./Textures/WhiteBlock.dds", m_Device, m_CommandList.Get());
-		m_TextureLoader.AddTexture("env", L"./Textures/snowcube1024.dds", m_Device, m_CommandList.Get());
+		m_TextureLoader.AddTexture("env", L"./Textures/sunsetcube1024.dds", m_Device, m_CommandList.Get());
 	}
 
 	void BuildRootSignature() {
@@ -405,12 +420,22 @@ private:
 			XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
 			XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
 			XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
+			XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f),
+			XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f),
+			XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f),
+			XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+			XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
 		};
 
 		std::string names[] = {
 			"red",
 			"green",
 			"blue",
+			"magenta",
+			"yellow",
+			"cyan",
+			"white",
+			"black",
 		};
 
 		UINT MatIndex = 2;

@@ -22,6 +22,11 @@
 * 1. red
 * 2. green
 * 3. blue
+* 4. cyan
+* 5. magenta
+* 6. yellow
+* 7. white
+* 8. black
 * 
 * [ Object Option List ]
 * 1. SphereOpt
@@ -41,20 +46,14 @@ namespace orangelie {
 	namespace PhysicsTool {
 
 		class PhysicsIntializer : public PhysicsEngine {
-		public:
-			PhysicsIntializer() {}
-			virtual ~PhysicsIntializer() {}
-
-		protected:								// Mutable
+		protected:
 			virtual void startup() {
-				/* Do Something */
-
 				SetCameraSpeed(10.0f);
 
-				SphereOpt sphOpt(0.0f, 10.0f, 0.0f, 2.0f, 2.0f, 2.0f, "blue");
+				SphereOpt sphOpt(0.0f, 10.0f, 0.0f, 2.0f, 2.0f, 2.0f, "yellow");
 				Sph1 = sphere(sphOpt);
 
-				BoxOpt boxOpt(0.0f, 5.0f, 0.0f, 2.0f, 2.0f, 2.0f, "green");
+				BoxOpt boxOpt(0.0f, 5.0f, 0.0f, 2.0f, 2.0f, 2.0f, "magenta");
 				Box1 = box(boxOpt);
 			}
 
@@ -64,43 +63,6 @@ namespace orangelie {
 
 				Sph1->SetPosition(t, 10.0f, 0.0f);
 				Box1->SetPosition(t, 5.0f, 0.0f);
-			}
-
-		protected:								// Unmutable
-			virtual void OnResize() {
-				PhysicsEngine::OnResize();
-
-
-			}
-
-			virtual void init() {
-				PhysicsEngine::init();
-
-
-			}
-
-			virtual void draw(float dt) override {
-				PhysicsEngine::draw(dt);
-
-
-			}
-
-			virtual void MouseDown(WPARAM btnState, int x, int y) override {
-				PhysicsEngine::MouseDown(btnState, x, y);
-
-
-			}
-
-			virtual void MouseUp(WPARAM btnState, int x, int y) override {
-				PhysicsEngine::MouseUp(btnState, x, y);
-
-
-			}
-
-			virtual void MouseMove(WPARAM btnState, int x, int y, float dt) override {
-				PhysicsEngine::MouseMove(btnState, x, y, dt);
-
-
 			}
 
 		private:
