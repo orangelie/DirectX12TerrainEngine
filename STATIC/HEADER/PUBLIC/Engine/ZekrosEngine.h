@@ -27,6 +27,7 @@
 #include "../Texture/TextureTools.h"
 #include "../Font/FontEngine.h"
 #include "../Terrain/HeightMapTerrain.h"
+#include "../Mesh/AssimpManager.h"
 
 
 namespace orangelie {
